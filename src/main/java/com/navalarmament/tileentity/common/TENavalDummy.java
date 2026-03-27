@@ -23,7 +23,6 @@ public class TENavalDummy extends TileEntity {
         return new int[]{coreX, coreY, coreZ};
     }
 
-    // ダミーが破壊されたらコアブロックに全体撤去を通知
     public void notifyCore(World world) {
         if (!hasCore) return;
         TileEntity core = world.getTileEntity(coreX, coreY, coreZ);
