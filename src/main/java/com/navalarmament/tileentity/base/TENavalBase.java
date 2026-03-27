@@ -1,5 +1,6 @@
 package com.navalarmament.tileentity.base;
 
+import com.navalarmament.system.CableNetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -13,6 +14,7 @@ public abstract class TENavalBase extends TileEntity implements ICableConnectabl
 
     protected Set<String> connections = new HashSet<String>();
     protected final int updateInterval;
+    private int retryTick = 0;
 
     public TENavalBase(int updateInterval) {
         this.updateInterval = updateInterval;
@@ -20,6 +22,14 @@ public abstract class TENavalBase extends TileEntity implements ICableConnectabl
 
     @Override
     public void updateEntity() {
+        if (worldObj == null) return;
+        if (!worldObj.isRemote) {
+            // 最初の100tick間は毎tickネットワーク登録を試みる
+            if (retryTick < 100) {
+                CableNetwork.getInstance().onDeviceConnected(worldObj, xCoord, yCoord, zCoord);
+                retryTick++;
+            }
+        }
         if (worldObj.isRemote) return;
         long tick = worldObj.getTotalWorldTime();
         int offset = Math.abs(xCoord * 31 + zCoord) % updateInterval;

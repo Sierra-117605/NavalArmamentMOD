@@ -1,22 +1,30 @@
 package com.navalarmament.tileentity.common;
 
+import com.navalarmament.system.CableNetwork;
 import com.navalarmament.tileentity.base.ICableConnectable;
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public class TENavalCable extends TileEntity {
 
-    // 6方向の接続状態
     private boolean[] connected = new boolean[6];
-    // 0=NORTH 1=SOUTH 2=EAST 3=WEST 4=UP 5=DOWN
+    private boolean registeredToNetwork = false;
 
     private static final int[][] DIRS = {
         { 0, 0,-1}, { 0, 0, 1},
         { 1, 0, 0}, {-1, 0, 0},
         { 0, 1, 0}, { 0,-1, 0}
     };
+
+    @Override
+    public void updateEntity() {
+        if (worldObj == null || worldObj.isRemote) return;
+        if (!registeredToNetwork) {
+            CableNetwork.getInstance().onCablePlaced(worldObj, xCoord, yCoord, zCoord);
+            registeredToNetwork = true;
+        }
+    }
 
     public void updateConnections(World world, int x, int y, int z) {
         boolean changed = false;
@@ -30,7 +38,6 @@ public class TENavalCable extends TileEntity {
             if (connected[i] != canConnect) {
                 connected[i] = canConnect;
                 changed = true;
-                // 接続先に通知
                 if (canConnect && neighbor instanceof ICableConnectable) {
                     ((ICableConnectable) neighbor).onCableConnected(x, y, z);
                 } else if (!canConnect && neighbor instanceof ICableConnectable) {
@@ -44,23 +51,17 @@ public class TENavalCable extends TileEntity {
         }
     }
 
-    public boolean[] getConnected() {
-        return connected;
-    }
+    public boolean[] getConnected() { return connected; }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        for (int i = 0; i < 6; i++) {
-            nbt.setBoolean("conn" + i, connected[i]);
-        }
+        for (int i = 0; i < 6; i++) nbt.setBoolean("conn" + i, connected[i]);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        for (int i = 0; i < 6; i++) {
-            connected[i] = nbt.getBoolean("conn" + i);
-        }
+        for (int i = 0; i < 6; i++) connected[i] = nbt.getBoolean("conn" + i);
     }
 }

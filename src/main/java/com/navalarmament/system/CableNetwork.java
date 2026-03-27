@@ -78,6 +78,10 @@ public class CableNetwork {
         return posToNetwork.get(key(x, y, z));
     }
 
+    public Set<String> getNetworkMembers(UUID networkId) {
+        return networks.get(networkId);
+    }
+
     public List<String> getCandDPositions(UUID networkId) {
         List<String> list = networkCandD.get(networkId);
         return list != null ? list : Collections.<String>emptyList();
