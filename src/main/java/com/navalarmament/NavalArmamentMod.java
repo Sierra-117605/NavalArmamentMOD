@@ -1,5 +1,6 @@
 package com.navalarmament;
 
+import com.navalarmament.init.NavalBlocks;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -21,6 +22,7 @@ public class NavalArmamentMod {
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
         logger.info("Naval Armament MOD - PreInit");
+        NavalBlocks.register();
     }
 
     @EventHandler

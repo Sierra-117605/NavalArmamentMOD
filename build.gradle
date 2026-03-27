@@ -22,8 +22,12 @@ group = "com.navalarmament"
 archivesBaseName = "NavalArmamentMOD"
 
 minecraft {
-    version = "1.7.10-10.13.4.1614-1.7.10"
-    runDir = "eclipse"
+    minecraft {
+        version = "1.7.10-10.13.4.1614-1.7.10"
+        runDir = "eclipse"
+    }
+
+    compileJava.options.encoding = 'UTF-8'
 }
 
 dependencies {
