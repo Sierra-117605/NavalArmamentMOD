@@ -42,3 +42,4 @@ tile.arresting_wire.name=Arresting Wire
 tile.hull_panel.name=Hull Panel
 tile.hull_structure.name=Hull Structure
 tile.submarine_equip.name=Submarine Equipment
+tile.ammo_storage.name=Ammo Storage

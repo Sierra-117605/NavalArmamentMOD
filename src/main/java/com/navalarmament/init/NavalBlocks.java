@@ -87,6 +87,7 @@ public class NavalBlocks {
     public static BlockHullPanel       HULL_PANEL;
     public static BlockHullStructure   HULL_STRUCTURE;
     public static BlockSubmarineEquip  SUBMARINE_EQUIP;
+    public static com.navalarmament.block.common.BlockAmmoStorage AMMO_STORAGE;
 
     public static void register() {
         NAVAL_DUMMY      = reg(new BlockNavalDummy(),      "naval_dummy");
@@ -143,6 +144,8 @@ public class NavalBlocks {
         HULL_PANEL       = reg(new BlockHullPanel(),       "hull_panel");
         HULL_STRUCTURE   = reg(new BlockHullStructure(),   "hull_structure");
         SUBMARINE_EQUIP  = reg(new BlockSubmarineEquip(),  "submarine_equip");
+        AMMO_STORAGE     = reg(new com.navalarmament.block.common.BlockAmmoStorage(), "ammo_storage");
+        GameRegistry.registerTileEntity(com.navalarmament.tileentity.common.TEAmmoStorage.class, "ammo_storage_te");
     }
 
     private static <T extends net.minecraft.block.Block> T reg(T block, String name) {

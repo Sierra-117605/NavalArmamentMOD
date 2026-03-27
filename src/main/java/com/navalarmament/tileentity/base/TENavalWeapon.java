@@ -122,8 +122,12 @@ public abstract class TENavalWeapon extends TENavalBase {
     }
 
     public int getAmmoCount() {
-        ItemStack stack = ammoInventory.getStackInSlot(0);
-        return stack != null ? stack.stackSize : 0;
+        int total = 0;
+        for (int i = 0; i < ammoInventory.getSizeInventory(); i++) {
+            net.minecraft.item.ItemStack s = ammoInventory.getStackInSlot(i);
+            if (s != null) total += s.stackSize;
+        }
+        return total;
     }
 
     public boolean acceptsAmmoType(ItemStack stack) {
