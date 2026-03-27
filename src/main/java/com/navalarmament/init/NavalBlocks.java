@@ -1,5 +1,6 @@
 package com.navalarmament.init;
 
+import com.navalarmament.block.common.BlockAmmoStorage;
 import com.navalarmament.block.common.BlockElevator;
 import com.navalarmament.block.common.BlockHullPanel;
 import com.navalarmament.block.common.BlockHullStructure;
@@ -20,7 +21,10 @@ import com.navalarmament.block.usn.BlockIFLOLS;
 import com.navalarmament.block.usn.BlockLargeDisplay;
 import com.navalarmament.block.usn.BlockMk32Torpedo;
 import com.navalarmament.block.usn.BlockMk38Gun;
-import com.navalarmament.block.usn.BlockMk41VLS;
+import com.navalarmament.block.usn.BlockMk41VLS8;
+import com.navalarmament.block.usn.BlockMk41VLS16;
+import com.navalarmament.block.usn.BlockMk41VLS32;
+import com.navalarmament.block.usn.BlockMk41VLS64;
 import com.navalarmament.block.usn.BlockMk45Gun;
 import com.navalarmament.block.usn.BlockOperatorConsole;
 import com.navalarmament.block.usn.BlockPhalanxCIWS;
@@ -28,7 +32,11 @@ import com.navalarmament.block.usn.BlockSPG62;
 import com.navalarmament.block.usn.BlockSPS67Radar;
 import com.navalarmament.block.usn.BlockSQS53Sonar;
 import com.navalarmament.block.usn.BlockSPY1Radar;
+import com.navalarmament.block.usn.BlockSubTorpedo;
+import com.navalarmament.block.usn.BlockSubVLS8;
+import com.navalarmament.block.usn.BlockSubVLS16;
 import com.navalarmament.block.usn.BlockWCS;
+import com.navalarmament.tileentity.common.TEAmmoStorage;
 import com.navalarmament.tileentity.common.TEElevator;
 import com.navalarmament.tileentity.common.TENavalCable;
 import com.navalarmament.tileentity.common.TENavalDummy;
@@ -45,7 +53,10 @@ import com.navalarmament.tileentity.usn.TEHarpoonLauncher;
 import com.navalarmament.tileentity.usn.TELargeDisplay;
 import com.navalarmament.tileentity.usn.TEMk32Torpedo;
 import com.navalarmament.tileentity.usn.TEMk38Gun;
-import com.navalarmament.tileentity.usn.TEMk41VLS;
+import com.navalarmament.tileentity.usn.TEMk41VLS8;
+import com.navalarmament.tileentity.usn.TEMk41VLS16;
+import com.navalarmament.tileentity.usn.TEMk41VLS32;
+import com.navalarmament.tileentity.usn.TEMk41VLS64;
 import com.navalarmament.tileentity.usn.TEMk45Gun;
 import com.navalarmament.tileentity.usn.TEOperatorConsole;
 import com.navalarmament.tileentity.usn.TEPhalanxCIWS;
@@ -53,6 +64,9 @@ import com.navalarmament.tileentity.usn.TEPS67Radar;
 import com.navalarmament.tileentity.usn.TESPG62;
 import com.navalarmament.tileentity.usn.TESPY1Radar;
 import com.navalarmament.tileentity.usn.TESQS53Sonar;
+import com.navalarmament.tileentity.usn.TESubTorpedo;
+import com.navalarmament.tileentity.usn.TESubVLS8;
+import com.navalarmament.tileentity.usn.TESubVLS16;
 import com.navalarmament.tileentity.usn.TEWCS;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -70,11 +84,17 @@ public class NavalBlocks {
     public static BlockAuxProcessor    AUX_PROCESSOR;
     public static BlockMk45Gun         MK45_GUN;
     public static BlockMk38Gun         MK38_GUN;
-    public static BlockMk41VLS         MK41_VLS;
+    public static BlockMk41VLS8        MK41_VLS_8;
+    public static BlockMk41VLS16       MK41_VLS_16;
+    public static BlockMk41VLS32       MK41_VLS_32;
+    public static BlockMk41VLS64       MK41_VLS_64;
     public static BlockPhalanxCIWS     PHALANX_CIWS;
     public static BlockSPG62           SPG62;
     public static BlockHarpoonLauncher HARPOON_LAUNCHER;
     public static BlockMk32Torpedo     MK32_TORPEDO;
+    public static BlockSubTorpedo      SUB_TORPEDO;
+    public static BlockSubVLS8         SUB_VLS_8;
+    public static BlockSubVLS16        SUB_VLS_16;
     public static BlockLargeDisplay    LARGE_DISPLAY;
     public static BlockOperatorConsole OPERATOR_CONSOLE;
     public static BlockCICDecoration   CIC_DECORATION;
@@ -87,7 +107,7 @@ public class NavalBlocks {
     public static BlockHullPanel       HULL_PANEL;
     public static BlockHullStructure   HULL_STRUCTURE;
     public static BlockSubmarineEquip  SUBMARINE_EQUIP;
-    public static com.navalarmament.block.common.BlockAmmoStorage AMMO_STORAGE;
+    public static BlockAmmoStorage     AMMO_STORAGE;
 
     public static void register() {
         NAVAL_DUMMY      = reg(new BlockNavalDummy(),      "naval_dummy");
@@ -114,8 +134,14 @@ public class NavalBlocks {
         GameRegistry.registerTileEntity(TEMk45Gun.class,         "mk45_gun_te");
         MK38_GUN         = reg(new BlockMk38Gun(),         "mk38_gun");
         GameRegistry.registerTileEntity(TEMk38Gun.class,         "mk38_gun_te");
-        MK41_VLS         = reg(new BlockMk41VLS(),         "mk41_vls");
-        GameRegistry.registerTileEntity(TEMk41VLS.class,         "mk41_vls_te");
+        MK41_VLS_8       = reg(new BlockMk41VLS8(),        "mk41_vls_8");
+        GameRegistry.registerTileEntity(TEMk41VLS8.class,        "mk41_vls_8_te");
+        MK41_VLS_16      = reg(new BlockMk41VLS16(),       "mk41_vls_16");
+        GameRegistry.registerTileEntity(TEMk41VLS16.class,       "mk41_vls_16_te");
+        MK41_VLS_32      = reg(new BlockMk41VLS32(),       "mk41_vls_32");
+        GameRegistry.registerTileEntity(TEMk41VLS32.class,       "mk41_vls_32_te");
+        MK41_VLS_64      = reg(new BlockMk41VLS64(),       "mk41_vls_64");
+        GameRegistry.registerTileEntity(TEMk41VLS64.class,       "mk41_vls_64_te");
         PHALANX_CIWS     = reg(new BlockPhalanxCIWS(),     "phalanx_ciws");
         GameRegistry.registerTileEntity(TEPhalanxCIWS.class,     "phalanx_ciws_te");
         SPG62            = reg(new BlockSPG62(),           "spg62");
@@ -124,6 +150,12 @@ public class NavalBlocks {
         GameRegistry.registerTileEntity(TEHarpoonLauncher.class, "harpoon_launcher_te");
         MK32_TORPEDO     = reg(new BlockMk32Torpedo(),     "mk32_torpedo");
         GameRegistry.registerTileEntity(TEMk32Torpedo.class,     "mk32_torpedo_te");
+        SUB_TORPEDO      = reg(new BlockSubTorpedo(),      "sub_torpedo");
+        GameRegistry.registerTileEntity(TESubTorpedo.class,      "sub_torpedo_te");
+        SUB_VLS_8        = reg(new BlockSubVLS8(),         "sub_vls_8");
+        GameRegistry.registerTileEntity(TESubVLS8.class,         "sub_vls_8_te");
+        SUB_VLS_16       = reg(new BlockSubVLS16(),        "sub_vls_16");
+        GameRegistry.registerTileEntity(TESubVLS16.class,        "sub_vls_16_te");
         LARGE_DISPLAY    = reg(new BlockLargeDisplay(),    "large_display");
         GameRegistry.registerTileEntity(TELargeDisplay.class,    "large_display_te");
         OPERATOR_CONSOLE = reg(new BlockOperatorConsole(), "operator_console");
@@ -144,8 +176,8 @@ public class NavalBlocks {
         HULL_PANEL       = reg(new BlockHullPanel(),       "hull_panel");
         HULL_STRUCTURE   = reg(new BlockHullStructure(),   "hull_structure");
         SUBMARINE_EQUIP  = reg(new BlockSubmarineEquip(),  "submarine_equip");
-        AMMO_STORAGE     = reg(new com.navalarmament.block.common.BlockAmmoStorage(), "ammo_storage");
-        GameRegistry.registerTileEntity(com.navalarmament.tileentity.common.TEAmmoStorage.class, "ammo_storage_te");
+        AMMO_STORAGE     = reg(new BlockAmmoStorage(),     "ammo_storage");
+        GameRegistry.registerTileEntity(TEAmmoStorage.class,     "ammo_storage_te");
     }
 
     private static <T extends net.minecraft.block.Block> T reg(T block, String name) {
