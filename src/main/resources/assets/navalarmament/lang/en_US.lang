@@ -7,3 +7,7 @@ tile.spy1_radar.name=SPY-1 Air Search Radar
 tile.naval_dummy.name=Naval Dummy
 itemGroup.navalarmament=Naval Armament MOD
 tile.candd.name=C&D System (AN/UYK-43)
+tile.wcs.name=WCS (AN/UYK-43)
+tile.ads.name=ADS (AN/UYK-43)
+tile.datalink.name=Data Link (AN/UYK-43)
+tile.aux_processor.name=Aux Processor (AN/UYK-44)
