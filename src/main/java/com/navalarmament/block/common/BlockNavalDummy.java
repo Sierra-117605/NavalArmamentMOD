@@ -11,10 +11,11 @@ import net.minecraft.world.World;
 public class BlockNavalDummy extends BlockNavalBase {
 
     public BlockNavalDummy() {
-        super(Material.iron);
-        setBlockName("naval_dummy");
-        setHardness(-1.0F);
-    }
+    super(Material.iron);
+    setBlockName("naval_dummy");
+    setHardness(-1.0F);
+    setBlockTextureName("iron_block"); // 仮テクスチャ
+}
 
     @Override
     public boolean hasTileEntity(int metadata) {

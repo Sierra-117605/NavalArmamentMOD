@@ -17,12 +17,14 @@ public class BlockSPY1Radar extends BlockNavalBase {
         {-1, 1,  0}, {1, 1,  0}, {0, 1, -1}, {0, 1, 1},
         {-1, 2,  0}, {1, 2,  0}, {0, 2, -1}, {0, 2, 1},
     };
-
+    
+    
     public BlockSPY1Radar() {
-        super(Material.iron);
-        setBlockName("spy1_radar");
-        setHardness(5.0F);
-    }
+    super(Material.iron);
+    setBlockName("spy1_radar");
+    setHardness(5.0F);
+    setBlockTextureName("iron_block"); // 仮テクスチャ（鉄ブロック）
+}
 
     @Override
     public TileEntity createTileEntity(World world, int metadata) {

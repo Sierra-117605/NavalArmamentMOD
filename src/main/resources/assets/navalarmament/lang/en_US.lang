@@ -1,0 +1,7 @@
+New-Item "C:\dev\NavalArmamentMOD\src\main\resources\assets\navalarmament\lang\en_US.lang" -ItemType File
+```
+
+作成したらIntelliJまたはVSCodeで開いて以下を貼り付けてください。
+```
+tile.spy1_radar.name=SPY-1 Air Search Radar
+tile.naval_dummy.name=Naval Dummy
