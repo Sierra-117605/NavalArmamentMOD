@@ -13,7 +13,6 @@ public abstract class TENavalBase extends TileEntity implements ICableConnectabl
 
     protected Set<String> connections = new HashSet<String>();
     protected final int updateInterval;
-    private long lastTick = 0;
 
     public TENavalBase(int updateInterval) {
         this.updateInterval = updateInterval;
@@ -43,8 +42,11 @@ public abstract class TENavalBase extends TileEntity implements ICableConnectabl
     }
 
     @Override
-    public Set<String> getConnections() {
-        return connections;
+    public Set<String> getConnections() { return connections; }
+
+    protected void syncToClient() {
+        if (worldObj == null || worldObj.isRemote) return;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override

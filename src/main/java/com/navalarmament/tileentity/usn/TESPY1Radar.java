@@ -2,19 +2,16 @@ package com.navalarmament.tileentity.usn;
 
 import com.navalarmament.block.usn.BlockSPY1Radar;
 import com.navalarmament.tileentity.base.IMultiBlockCore;
-import com.navalarmament.tileentity.base.TENavalBase;
+import com.navalarmament.tileentity.base.TENavalSensor;
 import com.navalarmament.util.MultiBlockHelper;
 import net.minecraft.world.World;
 
-public class TESPY1Radar extends TENavalBase implements IMultiBlockCore {
+public class TESPY1Radar extends TENavalSensor implements IMultiBlockCore {
 
-    public TESPY1Radar() {
-        super(20);
-    }
+    public TESPY1Radar() { super(20); }
 
     @Override
-    protected void onServerTick() {
-    }
+    public int getScanRange() { return 5120; }
 
     @Override
     public void onDummyDestroyed(World world, int x, int y, int z) {
@@ -23,20 +20,16 @@ public class TESPY1Radar extends TENavalBase implements IMultiBlockCore {
 
     @Override
     public boolean expand(World world) {
-        return MultiBlockHelper.expand(
-            world, xCoord, yCoord, zCoord,
+        return MultiBlockHelper.expand(world, xCoord, yCoord, zCoord,
             BlockSPY1Radar.BLUEPRINT, 0);
     }
 
     @Override
     public void collapse(World world) {
-        MultiBlockHelper.collapse(
-            world, xCoord, yCoord, zCoord,
+        MultiBlockHelper.collapse(world, xCoord, yCoord, zCoord,
             BlockSPY1Radar.BLUEPRINT, 0);
     }
 
     @Override
-    public int[] getCorePos() {
-        return new int[]{xCoord, yCoord, zCoord};
-    }
+    public int[] getCorePos() { return new int[]{xCoord, yCoord, zCoord}; }
 }

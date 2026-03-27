@@ -4,5 +4,5 @@ import com.navalarmament.tileentity.base.TENavalSensor;
 
 public class TEPS67Radar extends TENavalSensor {
     public TEPS67Radar() { super(20); }
-    @Override protected void onServerTick() {}
+    @Override public int getScanRange() { return 5120; }
 }

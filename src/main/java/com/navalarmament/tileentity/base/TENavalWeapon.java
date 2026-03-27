@@ -1,6 +1,7 @@
 package com.navalarmament.tileentity.base;
 
 import com.navalarmament.item.base.INavalAmmo;
+import com.navalarmament.system.TargetData;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,10 +11,11 @@ public abstract class TENavalWeapon extends TENavalBase {
 
     protected InventoryBasic ammoInventory;
     protected int engagementMode = 0;
-    public float currentYaw = 0f;
+    public float currentYaw   = 0f;
     public float currentPitch = 0f;
-    protected float targetYaw = 0f;
+    protected float targetYaw   = 0f;
     protected float targetPitch = 0f;
+    protected TargetData currentTarget = null;
 
     public TENavalWeapon(int slots) {
         super(20);
@@ -26,11 +28,45 @@ public abstract class TENavalWeapon extends TENavalBase {
         super.updateEntity();
     }
 
+    @Override
+    protected void onServerTick() {
+        if (engagementMode == 2 && currentTarget != null) {
+            aimAtTarget();
+            if (isAimed() && consumeAmmo()) {
+                fireAtTarget();
+                syncToClient();
+            }
+        }
+    }
+
+    private void aimAtTarget() {
+        double dx = currentTarget.posX - xCoord;
+        double dy = currentTarget.posY - yCoord;
+        double dz = currentTarget.posZ - zCoord;
+        double dist = Math.sqrt(dx*dx + dz*dz);
+        targetYaw   = (float)(Math.toDegrees(Math.atan2(dz, dx)));
+        targetPitch = (float)(-Math.toDegrees(Math.atan2(dy, dist)));
+    }
+
+    private boolean isAimed() {
+        float dyaw = Math.abs(currentYaw - targetYaw);
+        float dpitch = Math.abs(currentPitch - targetPitch);
+        return dyaw < 3.0f && dpitch < 3.0f;
+    }
+
+    private void fireAtTarget() {
+        INavalAmmo ammo = getLoadedAmmoStats();
+        if (ammo == null) return;
+        // Phase 6でEntityを生成。現状はログ出力のみ
+        com.navalarmament.NavalArmamentMod.logger.info(
+            "FIRE at " + currentTarget.posX + "," + currentTarget.posY + "," + currentTarget.posZ);
+    }
+
     protected void rotateTick() {
         float dyaw = targetYaw - currentYaw;
         float dpitch = targetPitch - currentPitch;
-        if (dyaw > 180)  dyaw  -= 360;
-        if (dyaw < -180) dyaw  += 360;
+        if (dyaw >  180) dyaw -= 360;
+        if (dyaw < -180) dyaw += 360;
         float speed = getRotationSpeed();
         currentYaw   += Math.signum(dyaw)   * Math.min(Math.abs(dyaw),   speed);
         currentPitch += Math.signum(dpitch) * Math.min(Math.abs(dpitch), speed);
@@ -69,19 +105,19 @@ public abstract class TENavalWeapon extends TENavalBase {
         return false;
     }
 
+    public void setCurrentTarget(TargetData td) { this.currentTarget = td; }
+    public TargetData getCurrentTarget() { return currentTarget; }
     public int getEngagementMode() { return engagementMode; }
     public void setEngagementMode(int mode) { this.engagementMode = mode; markDirty(); }
+    public InventoryBasic getAmmoInventory() { return ammoInventory; }
 
     public abstract float getRotationSpeed();
-
-    @Override
-    protected void onServerTick() {}
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         nbt.setInteger("engagementMode", engagementMode);
-        nbt.setFloat("currentYaw", currentYaw);
+        nbt.setFloat("currentYaw",   currentYaw);
         nbt.setFloat("currentPitch", currentPitch);
         NBTTagList items = new NBTTagList();
         for (int i = 0; i < ammoInventory.getSizeInventory(); i++) {
