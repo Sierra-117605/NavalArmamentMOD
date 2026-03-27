@@ -147,6 +147,15 @@ public abstract class TENavalWeapon extends TENavalBase {
     public abstract float getRotationSpeed();
     public int getAmmoStackLimit() { return 64; }
 
+    // CICから設定する優先弾種（クラス名で管理）
+    private String preferredAmmoClass = "";
+
+    public String getPreferredAmmoClass() { return preferredAmmoClass; }
+    public void setPreferredAmmoClass(String className) {
+        this.preferredAmmoClass = className;
+        markDirty();
+    }
+
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
