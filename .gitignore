@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# ForgeGradle生成物（サイズが大きいため除外）
+fg_cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# ログ
+*.log
