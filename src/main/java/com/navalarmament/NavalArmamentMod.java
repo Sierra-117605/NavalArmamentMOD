@@ -1,6 +1,7 @@
 package com.navalarmament;
 
 import com.navalarmament.config.ConfigHandler;
+import com.navalarmament.gui.GuiHandler;
 import com.navalarmament.init.NavalBlocks;
 import com.navalarmament.init.NavalEntities;
 import com.navalarmament.init.NavalItems;
@@ -9,6 +10,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NavalArmamentMod.MODID, name = NavalArmamentMod.NAME, version = NavalArmamentMod.VERSION)
@@ -36,5 +38,6 @@ public class NavalArmamentMod {
     public void init(FMLInitializationEvent event) {
         logger.info("Naval Armament MOD - Init");
         NavalEntities.register();
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
     }
 }
