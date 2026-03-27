@@ -1,61 +1,151 @@
 package com.navalarmament.init;
 
+import com.navalarmament.block.common.BlockElevator;
+import com.navalarmament.block.common.BlockHullPanel;
+import com.navalarmament.block.common.BlockHullStructure;
 import com.navalarmament.block.common.BlockNavalCable;
 import com.navalarmament.block.common.BlockNavalDummy;
+import com.navalarmament.block.common.BlockShutter;
+import com.navalarmament.block.common.BlockSubmarineEquip;
+import com.navalarmament.block.common.BlockWeaponElevator;
 import com.navalarmament.block.usn.BlockADS;
+import com.navalarmament.block.usn.BlockArrestingWire;
 import com.navalarmament.block.usn.BlockAuxProcessor;
+import com.navalarmament.block.usn.BlockCICDecoration;
 import com.navalarmament.block.usn.BlockCandD;
+import com.navalarmament.block.usn.BlockCatapult;
 import com.navalarmament.block.usn.BlockDataLink;
+import com.navalarmament.block.usn.BlockHarpoonLauncher;
+import com.navalarmament.block.usn.BlockIFLOLS;
+import com.navalarmament.block.usn.BlockLargeDisplay;
+import com.navalarmament.block.usn.BlockMk32Torpedo;
+import com.navalarmament.block.usn.BlockMk38Gun;
+import com.navalarmament.block.usn.BlockMk41VLS;
+import com.navalarmament.block.usn.BlockMk45Gun;
+import com.navalarmament.block.usn.BlockOperatorConsole;
+import com.navalarmament.block.usn.BlockPhalanxCIWS;
+import com.navalarmament.block.usn.BlockSPG62;
+import com.navalarmament.block.usn.BlockSPS67Radar;
+import com.navalarmament.block.usn.BlockSQS53Sonar;
 import com.navalarmament.block.usn.BlockSPY1Radar;
 import com.navalarmament.block.usn.BlockWCS;
+import com.navalarmament.tileentity.common.TEElevator;
 import com.navalarmament.tileentity.common.TENavalCable;
 import com.navalarmament.tileentity.common.TENavalDummy;
+import com.navalarmament.tileentity.common.TEShutter;
+import com.navalarmament.tileentity.common.TEWeaponElevator;
 import com.navalarmament.tileentity.usn.TEADS;
+import com.navalarmament.tileentity.usn.TEArrestingWire;
 import com.navalarmament.tileentity.usn.TEAuxProcessor;
 import com.navalarmament.tileentity.usn.TECandD;
+import com.navalarmament.tileentity.usn.TECatapult;
 import com.navalarmament.tileentity.usn.TEDataLink;
+import com.navalarmament.tileentity.usn.TEIFLOLS;
+import com.navalarmament.tileentity.usn.TEHarpoonLauncher;
+import com.navalarmament.tileentity.usn.TELargeDisplay;
+import com.navalarmament.tileentity.usn.TEMk32Torpedo;
+import com.navalarmament.tileentity.usn.TEMk38Gun;
+import com.navalarmament.tileentity.usn.TEMk41VLS;
+import com.navalarmament.tileentity.usn.TEMk45Gun;
+import com.navalarmament.tileentity.usn.TEOperatorConsole;
+import com.navalarmament.tileentity.usn.TEPhalanxCIWS;
+import com.navalarmament.tileentity.usn.TEPS67Radar;
+import com.navalarmament.tileentity.usn.TESPG62;
 import com.navalarmament.tileentity.usn.TESPY1Radar;
+import com.navalarmament.tileentity.usn.TESQS53Sonar;
 import com.navalarmament.tileentity.usn.TEWCS;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class NavalBlocks {
 
-    public static BlockNavalDummy NAVAL_DUMMY;
-    public static BlockNavalCable NAVAL_CABLE;
-    public static BlockSPY1Radar SPY1_RADAR;
-    public static BlockCandD CANDD;
-    public static BlockWCS WCS;
-    public static BlockADS ADS;
-    public static BlockDataLink DATALINK;
-    public static BlockAuxProcessor AUX_PROCESSOR;
+    public static BlockNavalDummy      NAVAL_DUMMY;
+    public static BlockNavalCable      NAVAL_CABLE;
+    public static BlockSPY1Radar       SPY1_RADAR;
+    public static BlockSPS67Radar      SPS67_RADAR;
+    public static BlockSQS53Sonar      SQS53_SONAR;
+    public static BlockCandD           CANDD;
+    public static BlockWCS             WCS;
+    public static BlockADS             ADS;
+    public static BlockDataLink        DATALINK;
+    public static BlockAuxProcessor    AUX_PROCESSOR;
+    public static BlockMk45Gun         MK45_GUN;
+    public static BlockMk38Gun         MK38_GUN;
+    public static BlockMk41VLS         MK41_VLS;
+    public static BlockPhalanxCIWS     PHALANX_CIWS;
+    public static BlockSPG62           SPG62;
+    public static BlockHarpoonLauncher HARPOON_LAUNCHER;
+    public static BlockMk32Torpedo     MK32_TORPEDO;
+    public static BlockLargeDisplay    LARGE_DISPLAY;
+    public static BlockOperatorConsole OPERATOR_CONSOLE;
+    public static BlockCICDecoration   CIC_DECORATION;
+    public static BlockIFLOLS          IFLOLS;
+    public static BlockShutter         SHUTTER;
+    public static BlockElevator        ELEVATOR;
+    public static BlockWeaponElevator  WEAPON_ELEVATOR;
+    public static BlockCatapult        CATAPULT;
+    public static BlockArrestingWire   ARRESTING_WIRE;
+    public static BlockHullPanel       HULL_PANEL;
+    public static BlockHullStructure   HULL_STRUCTURE;
+    public static BlockSubmarineEquip  SUBMARINE_EQUIP;
 
     public static void register() {
-        NAVAL_DUMMY = registerBlock(new BlockNavalDummy(), "naval_dummy");
-        GameRegistry.registerTileEntity(TENavalDummy.class, "naval_dummy_te");
-
-        NAVAL_CABLE = registerBlock(new BlockNavalCable(), "naval_cable");
-        GameRegistry.registerTileEntity(TENavalCable.class, "naval_cable_te");
-
-        SPY1_RADAR = registerBlock(new BlockSPY1Radar(), "spy1_radar");
-        GameRegistry.registerTileEntity(TESPY1Radar.class, "spy1_radar_te");
-
-        CANDD = registerBlock(new BlockCandD(), "candd");
-        GameRegistry.registerTileEntity(TECandD.class, "candd_te");
-
-        WCS = registerBlock(new BlockWCS(), "wcs");
-        GameRegistry.registerTileEntity(TEWCS.class, "wcs_te");
-
-        ADS = registerBlock(new BlockADS(), "ads");
-        GameRegistry.registerTileEntity(TEADS.class, "ads_te");
-
-        DATALINK = registerBlock(new BlockDataLink(), "datalink");
-        GameRegistry.registerTileEntity(TEDataLink.class, "datalink_te");
-
-        AUX_PROCESSOR = registerBlock(new BlockAuxProcessor(), "aux_processor");
-        GameRegistry.registerTileEntity(TEAuxProcessor.class, "aux_processor_te");
+        NAVAL_DUMMY      = reg(new BlockNavalDummy(),      "naval_dummy");
+        GameRegistry.registerTileEntity(TENavalDummy.class,      "naval_dummy_te");
+        NAVAL_CABLE      = reg(new BlockNavalCable(),      "naval_cable");
+        GameRegistry.registerTileEntity(TENavalCable.class,      "naval_cable_te");
+        SPY1_RADAR       = reg(new BlockSPY1Radar(),       "spy1_radar");
+        GameRegistry.registerTileEntity(TESPY1Radar.class,       "spy1_radar_te");
+        SPS67_RADAR      = reg(new BlockSPS67Radar(),      "sps67_radar");
+        GameRegistry.registerTileEntity(TEPS67Radar.class,       "sps67_radar_te");
+        SQS53_SONAR      = reg(new BlockSQS53Sonar(),      "sqs53_sonar");
+        GameRegistry.registerTileEntity(TESQS53Sonar.class,      "sqs53_sonar_te");
+        CANDD            = reg(new BlockCandD(),           "candd");
+        GameRegistry.registerTileEntity(TECandD.class,           "candd_te");
+        WCS              = reg(new BlockWCS(),             "wcs");
+        GameRegistry.registerTileEntity(TEWCS.class,             "wcs_te");
+        ADS              = reg(new BlockADS(),             "ads");
+        GameRegistry.registerTileEntity(TEADS.class,             "ads_te");
+        DATALINK         = reg(new BlockDataLink(),        "datalink");
+        GameRegistry.registerTileEntity(TEDataLink.class,        "datalink_te");
+        AUX_PROCESSOR    = reg(new BlockAuxProcessor(),    "aux_processor");
+        GameRegistry.registerTileEntity(TEAuxProcessor.class,    "aux_processor_te");
+        MK45_GUN         = reg(new BlockMk45Gun(),         "mk45_gun");
+        GameRegistry.registerTileEntity(TEMk45Gun.class,         "mk45_gun_te");
+        MK38_GUN         = reg(new BlockMk38Gun(),         "mk38_gun");
+        GameRegistry.registerTileEntity(TEMk38Gun.class,         "mk38_gun_te");
+        MK41_VLS         = reg(new BlockMk41VLS(),         "mk41_vls");
+        GameRegistry.registerTileEntity(TEMk41VLS.class,         "mk41_vls_te");
+        PHALANX_CIWS     = reg(new BlockPhalanxCIWS(),     "phalanx_ciws");
+        GameRegistry.registerTileEntity(TEPhalanxCIWS.class,     "phalanx_ciws_te");
+        SPG62            = reg(new BlockSPG62(),           "spg62");
+        GameRegistry.registerTileEntity(TESPG62.class,           "spg62_te");
+        HARPOON_LAUNCHER = reg(new BlockHarpoonLauncher(), "harpoon_launcher");
+        GameRegistry.registerTileEntity(TEHarpoonLauncher.class, "harpoon_launcher_te");
+        MK32_TORPEDO     = reg(new BlockMk32Torpedo(),     "mk32_torpedo");
+        GameRegistry.registerTileEntity(TEMk32Torpedo.class,     "mk32_torpedo_te");
+        LARGE_DISPLAY    = reg(new BlockLargeDisplay(),    "large_display");
+        GameRegistry.registerTileEntity(TELargeDisplay.class,    "large_display_te");
+        OPERATOR_CONSOLE = reg(new BlockOperatorConsole(), "operator_console");
+        GameRegistry.registerTileEntity(TEOperatorConsole.class, "operator_console_te");
+        CIC_DECORATION   = reg(new BlockCICDecoration(),   "cic_decoration");
+        IFLOLS           = reg(new BlockIFLOLS(),          "iflols");
+        GameRegistry.registerTileEntity(TEIFLOLS.class,          "iflols_te");
+        SHUTTER          = reg(new BlockShutter(),         "shutter");
+        GameRegistry.registerTileEntity(TEShutter.class,         "shutter_te");
+        ELEVATOR         = reg(new BlockElevator(),        "elevator");
+        GameRegistry.registerTileEntity(TEElevator.class,        "elevator_te");
+        WEAPON_ELEVATOR  = reg(new BlockWeaponElevator(),  "weapon_elevator");
+        GameRegistry.registerTileEntity(TEWeaponElevator.class,  "weapon_elevator_te");
+        CATAPULT         = reg(new BlockCatapult(),        "catapult");
+        GameRegistry.registerTileEntity(TECatapult.class,        "catapult_te");
+        ARRESTING_WIRE   = reg(new BlockArrestingWire(),   "arresting_wire");
+        GameRegistry.registerTileEntity(TEArrestingWire.class,   "arresting_wire_te");
+        HULL_PANEL       = reg(new BlockHullPanel(),       "hull_panel");
+        HULL_STRUCTURE   = reg(new BlockHullStructure(),   "hull_structure");
+        SUBMARINE_EQUIP  = reg(new BlockSubmarineEquip(),  "submarine_equip");
     }
 
-    private static <T extends net.minecraft.block.Block> T registerBlock(T block, String name) {
+    private static <T extends net.minecraft.block.Block> T reg(T block, String name) {
         GameRegistry.registerBlock(block, name);
         return block;
     }

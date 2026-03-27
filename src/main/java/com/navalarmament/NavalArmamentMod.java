@@ -2,15 +2,14 @@ package com.navalarmament;
 
 import com.navalarmament.config.ConfigHandler;
 import com.navalarmament.init.NavalBlocks;
+import com.navalarmament.init.NavalItems;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid   = NavalArmamentMod.MODID,
-     name    = NavalArmamentMod.NAME,
-     version = NavalArmamentMod.VERSION)
+@Mod(modid = NavalArmamentMod.MODID, name = NavalArmamentMod.NAME, version = NavalArmamentMod.VERSION)
 public class NavalArmamentMod {
 
     public static final String MODID   = "navalarmament";
@@ -25,6 +24,7 @@ public class NavalArmamentMod {
         logger.info("Naval Armament MOD - PreInit");
         ConfigHandler.preInit(event);
         NavalBlocks.register();
+        NavalItems.register();
     }
 
     @EventHandler
