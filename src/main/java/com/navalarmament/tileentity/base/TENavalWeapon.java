@@ -1,5 +1,8 @@
 package com.navalarmament.tileentity.base;
 
+import com.navalarmament.entity.EntityMissile;
+import com.navalarmament.entity.EntityShell;
+import com.navalarmament.entity.EntityTorpedo;
 import com.navalarmament.item.base.INavalAmmo;
 import com.navalarmament.system.TargetData;
 import net.minecraft.inventory.InventoryBasic;
@@ -49,7 +52,7 @@ public abstract class TENavalWeapon extends TENavalBase {
     }
 
     private boolean isAimed() {
-        float dyaw = Math.abs(currentYaw - targetYaw);
+        float dyaw   = Math.abs(currentYaw - targetYaw);
         float dpitch = Math.abs(currentPitch - targetPitch);
         return dyaw < 3.0f && dpitch < 3.0f;
     }
@@ -57,13 +60,40 @@ public abstract class TENavalWeapon extends TENavalBase {
     private void fireAtTarget() {
         INavalAmmo ammo = getLoadedAmmoStats();
         if (ammo == null) return;
-        // Phase 6でEntityを生成。現状はログ出力のみ
-        com.navalarmament.NavalArmamentMod.logger.info(
-            "FIRE at " + currentTarget.posX + "," + currentTarget.posY + "," + currentTarget.posZ);
+
+        double dx = currentTarget.posX - xCoord;
+        double dy = currentTarget.posY - yCoord;
+        double dz = currentTarget.posZ - zCoord;
+        double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        double vx = dx/dist * ammo.getSpeed();
+        double vy = dy/dist * ammo.getSpeed();
+        double vz = dz/dist * ammo.getSpeed();
+
+        String ammoClass = ammo.getClass().getSimpleName();
+
+        if (ammoClass.contains("Shell")) {
+            EntityShell shell = new EntityShell(worldObj,
+                xCoord+0.5, yCoord+1.5, zCoord+0.5,
+                vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius());
+            worldObj.spawnEntityInWorld(shell);
+        } else if (ammoClass.contains("Torpedo")) {
+            EntityTorpedo torp = new EntityTorpedo(worldObj,
+                xCoord+0.5, yCoord+0.5, zCoord+0.5,
+                vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius());
+            worldObj.spawnEntityInWorld(torp);
+        } else {
+            EntityMissile missile = new EntityMissile(worldObj,
+                xCoord+0.5, yCoord+1.5, zCoord+0.5,
+                vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius());
+            missile.setTarget(currentTarget.posX, currentTarget.posY, currentTarget.posZ);
+            missile.targetEntityId = currentTarget.entityId;
+            missile.speed = ammo.getSpeed();
+            worldObj.spawnEntityInWorld(missile);
+        }
     }
 
     protected void rotateTick() {
-        float dyaw = targetYaw - currentYaw;
+        float dyaw   = targetYaw - currentYaw;
         float dpitch = targetPitch - currentPitch;
         if (dyaw >  180) dyaw -= 360;
         if (dyaw < -180) dyaw += 360;
@@ -110,7 +140,6 @@ public abstract class TENavalWeapon extends TENavalBase {
     public int getEngagementMode() { return engagementMode; }
     public void setEngagementMode(int mode) { this.engagementMode = mode; markDirty(); }
     public InventoryBasic getAmmoInventory() { return ammoInventory; }
-
     public abstract float getRotationSpeed();
 
     @Override
@@ -142,7 +171,8 @@ public abstract class TENavalWeapon extends TENavalBase {
         for (int i = 0; i < items.tagCount(); i++) {
             NBTTagCompound tag = items.getCompoundTagAt(i);
             int slot = tag.getByte("slot");
-            ammoInventory.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(tag));
+            ammoInventory.setInventorySlotContents(slot,
+                ItemStack.loadItemStackFromNBT(tag));
         }
     }
 }
