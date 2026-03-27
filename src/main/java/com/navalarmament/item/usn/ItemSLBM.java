@@ -1,8 +1,8 @@
 package com.navalarmament.item.usn;
 
 import com.navalarmament.item.base.ItemNavalAmmo;
-import com.navalarmament.tileentity.usn.TESubVLS8;
-import com.navalarmament.tileentity.usn.TESubVLS16;
+import com.navalarmament.tileentity.usn.TESubVLSSSBN8;
+import com.navalarmament.tileentity.usn.TESubVLSSSBN16;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +15,8 @@ public class ItemSLBM extends ItemNavalAmmo {
     @Override
     public List<Class<?>> getCompatibleWeapons() {
         List<Class<?>> list = new ArrayList<Class<?>>();
-        list.add(TESubVLS8.class);
-        list.add(TESubVLS16.class);
+        list.add(TESubVLSSSBN8.class);
+        list.add(TESubVLSSSBN16.class);
         return list;
     }
 }

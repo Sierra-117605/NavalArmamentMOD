@@ -145,6 +145,7 @@ public abstract class TENavalWeapon extends TENavalBase {
     public void setEngagementMode(int mode) { this.engagementMode = mode; markDirty(); }
     public InventoryBasic getAmmoInventory() { return ammoInventory; }
     public abstract float getRotationSpeed();
+    public int getAmmoStackLimit() { return 64; }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
