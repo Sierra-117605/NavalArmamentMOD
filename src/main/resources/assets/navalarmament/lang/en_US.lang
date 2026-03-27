@@ -6,3 +6,4 @@ New-Item "C:\dev\NavalArmamentMOD\src\main\resources\assets\navalarmament\lang\e
 tile.spy1_radar.name=SPY-1 Air Search Radar
 tile.naval_dummy.name=Naval Dummy
 itemGroup.navalarmament=Naval Armament MOD
+tile.candd.name=C&D System (AN/UYK-43)
