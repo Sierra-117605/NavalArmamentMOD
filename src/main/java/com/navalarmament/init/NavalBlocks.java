@@ -1,18 +1,22 @@
 package com.navalarmament.init;
 
 import com.navalarmament.block.common.BlockNavalDummy;
+import com.navalarmament.block.usn.BlockSPY1Radar;
 import com.navalarmament.tileentity.common.TENavalDummy;
+import com.navalarmament.tileentity.usn.TESPY1Radar;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class NavalBlocks {
 
-    // ブロックのインスタンス
     public static BlockNavalDummy NAVAL_DUMMY;
+    public static BlockSPY1Radar SPY1_RADAR;
 
-    // ブロック登録（PreInitで呼ぶ）
     public static void register() {
         NAVAL_DUMMY = registerBlock(new BlockNavalDummy(), "naval_dummy");
         GameRegistry.registerTileEntity(TENavalDummy.class, "naval_dummy_te");
+
+        SPY1_RADAR = registerBlock(new BlockSPY1Radar(), "spy1_radar");
+        GameRegistry.registerTileEntity(TESPY1Radar.class, "spy1_radar_te");
     }
 
     private static <T extends net.minecraft.block.Block> T registerBlock(T block, String name) {
