@@ -9,6 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -73,8 +75,15 @@ public class TECandD extends TENavalBase {
             TargetData td = it.next();
             if (td.entity.isDead || now - td.detectedAt > TARGET_TTL_MS) it.remove();
         }
-        // クライアント側GUIへ同期（空リストも送信してクリア）
-        NavalPacketHandler.sendCandDSync(worldObj, xCoord, yCoord, zCoord, integratedTargets);
+        // 距離でソートして最大40件に絞り、クライアントへ同期
+        List<TargetData> sorted = new ArrayList<TargetData>(integratedTargets);
+        Collections.sort(sorted, new Comparator<TargetData>() {
+            @Override public int compare(TargetData a, TargetData b) {
+                return Double.compare(a.distance, b.distance);
+            }
+        });
+        if (sorted.size() > 40) sorted = sorted.subList(0, 40);
+        NavalPacketHandler.sendCandDSync(worldObj, xCoord, yCoord, zCoord, sorted);
         sendToWCS();
     }
 
