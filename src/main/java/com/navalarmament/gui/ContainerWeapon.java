@@ -14,25 +14,33 @@ public class ContainerWeapon extends Container {
 
     public ContainerWeapon(InventoryPlayer playerInv, TENavalWeapon weapon) {
         this.weapon = weapon;
-        this.weaponSlots = weapon.getAmmoInventory().getSizeInventory();
+        int size = weapon.getAmmoInventory().getSizeInventory();
+        this.weaponSlots = size;
+        int cols = weapon.getGuiColumns();
 
-        // 弾薬スロット（武装ごとのスロット数）
+        int ammoRows = (weaponSlots + cols - 1) / cols;
+        int invY  = 22 + ammoRows * 18 + 20;
+        int hotY  = invY + 54 + 4;
+
+        // 弾薬スロット
         for (int i = 0; i < weaponSlots; i++) {
+            int col = i % cols;
+            int row = i / cols;
             addSlotToContainer(new SlotNavalAmmo(weapon,
-                weapon.getAmmoInventory(), i, 8 + i * 18, 22));
+                weapon.getAmmoInventory(), i, 8 + col * 18, 22 + row * 18));
         }
 
         // プレイヤーインベントリ3行
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlotToContainer(new Slot(playerInv,
-                    col + row * 9 + 9, 8 + col * 18, 78 + row * 18));
+                    col + row * 9 + 9, 8 + col * 18, invY + row * 18));
             }
         }
 
         // ホットバー
         for (int col = 0; col < 9; col++) {
-            addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 136));
+            addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, hotY));
         }
     }
 

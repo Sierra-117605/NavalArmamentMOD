@@ -6,9 +6,9 @@
 ---
 
 ## 今どこにいるか
-フェーズ: Phase 6 GUI実装中
-現在の作業: 武装ブロックのGUI（弾薬インベントリ）のレイアウト調整中
-次のステップ: GUIレイアウト確定 → コミット → C&D GUIの実装
+フェーズ: Phase 7完了、GUI修正中
+現在の作業: 武装GUI（ContainerWeapon/GuiWeapon）修正・VLSレイアウト対応
+次のステップ: GUI修正をコミット → C&D GUIの実装
 
 ---
 
@@ -95,6 +95,18 @@ GUI:
 4. ダミーブロックにもケーブル接続可能（DS-01未反映）
 5. 国籍混在接続OK
 6. v1.0実装は全29種
+7. **リアリズム方針**: イージスシステムMOD参考。弾道計算なし、兵器挙動は現実準拠
+   - VLS（Mk41・SubVLS）: 1セル=1発（stackLimit=1）
+   - SSBN VLS: 1チューブ=1発（SLBM、stackLimit=1）
+   - SSGN VLS: 1チューブ=7発（MAC、stackLimit=7）
+   - VLSのGUI列数は8固定（8の倍数セル対応）
+   - GUI消費順序: スロット0（左上）から順番
+
+## VLSセル数・レイアウト仕様
+- GUIの列数は8（getGuiColumns()で定義、TENavalWeaponのデフォルトは9）
+- スロットiはGUI位置(row=i/cols, col=i%cols)に対応
+- 発射時はスロット0から順に消費（左上→右→次の行）
+- VLSバリアント: 8/16/32/64セル（全て8の倍数で割り切れる）
 
 ---
 
@@ -105,8 +117,8 @@ GUI:
 
 ---
 
-## 現在のGUI問題
-武装GUIのレイアウトが崩れている。
-- 弾薬スロットが見えない
-- プレイヤーインベントリの表示が不完全
-→ GuiWeapon.java / ContainerWeapon.java を調整中
+## GUI仕様（確定）
+- GuiWeapon / ContainerWeapon: 動的レイアウト（weapon.getGuiColumns()に基づく）
+- 弾薬スロット: 最大行数は可変、GUIは自動的にリサイズ
+- プレイヤーインベントリ: 常に9列×3行＋ホットバー
+- VLS64（64セル）のGUI高さ270pxはスケール3でギリギリ収まる（816px画面前提）

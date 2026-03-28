@@ -50,7 +50,15 @@ public class TEWCS extends TENavalBase {
         }
     }
 
-    private List<TENavalWeapon> findWeaponsViaBFS() {
+    public List<TENavalWeapon> findWeaponsViaBFS() {
+        return findWeaponsViaBFS(false);
+    }
+
+    public List<TENavalWeapon> findAllWeaponsViaBFS() {
+        return findWeaponsViaBFS(true);
+    }
+
+    private List<TENavalWeapon> findWeaponsViaBFS(boolean all) {
         List<TENavalWeapon> result = new ArrayList<TENavalWeapon>();
         Set<String> visited = new HashSet<String>();
         Queue<int[]> queue = new LinkedList<int[]>();
@@ -79,7 +87,7 @@ public class TEWCS extends TENavalBase {
                     TileEntity te = worldObj.getTileEntity(nx, ny, nz);
                     if (te instanceof TENavalWeapon) {
                         TENavalWeapon w = (TENavalWeapon) te;
-                        if (w.getEngagementMode() == 2 && visited.add(k)) result.add(w);
+                        if ((all || w.getEngagementMode() == 2) && visited.add(k)) result.add(w);
                     }
                 }
             }

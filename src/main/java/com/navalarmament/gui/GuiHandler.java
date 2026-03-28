@@ -2,15 +2,16 @@ package com.navalarmament.gui;
 
 import com.navalarmament.tileentity.base.TENavalWeapon;
 import com.navalarmament.tileentity.common.TEAmmoStorage;
+import com.navalarmament.tileentity.usn.TEOperatorConsole;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public class GuiHandler implements IGuiHandler {
-
     public static final int GUI_WEAPON       = 0;
     public static final int GUI_AMMO_STORAGE = 1;
+    public static final int GUI_CIC          = 2;
 
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player,
@@ -20,6 +21,8 @@ public class GuiHandler implements IGuiHandler {
             return new ContainerWeapon(player.inventory, (TENavalWeapon) te);
         if (id == GUI_AMMO_STORAGE && te instanceof TEAmmoStorage)
             return new ContainerAmmoStorage(player.inventory, (TEAmmoStorage) te);
+        if (id == GUI_CIC && te instanceof TEOperatorConsole)
+            return new ContainerOperatorConsole();
         return null;
     }
 
@@ -31,6 +34,8 @@ public class GuiHandler implements IGuiHandler {
             return new GuiWeapon(player.inventory, (TENavalWeapon) te);
         if (id == GUI_AMMO_STORAGE && te instanceof TEAmmoStorage)
             return new GuiAmmoStorage(player.inventory, (TEAmmoStorage) te);
+        if (id == GUI_CIC && te instanceof TEOperatorConsole)
+            return new GuiOperatorConsole(player.inventory, (TEOperatorConsole) te);
         return null;
     }
 }
