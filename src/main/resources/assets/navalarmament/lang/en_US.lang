@@ -1,35 +1,47 @@
-New-Item "C:\dev\NavalArmamentMOD\src\main\resources\assets\navalarmament\lang\en_US.lang" -ItemType File
-```
-
-作成したらIntelliJまたはVSCodeで開いて以下を貼り付けてください。
-```
-tile.spy1_radar.name=SPY-1 Air Search Radar
-tile.naval_dummy.name=Naval Dummy
 itemGroup.navalarmament=Naval Armament MOD
+
+# Common
+tile.naval_dummy.name=Naval Dummy Block
+tile.naval_cable.name=Naval Cable
+
+# Sensors
+tile.spy1_radar.name=SPY-1 Air Search Radar
+tile.sps67_radar.name=SPS-67 Surface Search Radar
+tile.sqs53_sonar.name=SQS-53 Sonar
+
+# Processing
 tile.candd.name=C&D System (AN/UYK-43)
 tile.wcs.name=WCS (AN/UYK-43)
 tile.ads.name=ADS (AN/UYK-43)
 tile.datalink.name=Data Link (AN/UYK-43)
 tile.aux_processor.name=Aux Processor (AN/UYK-44)
+
+# USN Guns
 tile.mk45_gun.name=Mk45 5-inch Gun
-item.shell_5inch.name=5-inch Shell
 tile.mk38_gun.name=Mk38 25mm Gun
-tile.mk41_vls.name=Mk41 VLS
 tile.phalanx_ciws.name=Phalanx CIWS
 tile.spg62.name=SPG-62 Illuminator
+
+# USN VLS
+tile.mk41_vls_8.name=Mk41 VLS (8-cell)
+tile.mk41_vls_16.name=Mk41 VLS (16-cell)
+tile.mk41_vls_32.name=Mk41 VLS (32-cell)
+tile.mk41_vls_64.name=Mk41 VLS (64-cell)
+
+# USN Launchers
 tile.harpoon_launcher.name=Harpoon Launcher
 tile.mk32_torpedo.name=Mk32 Torpedo Tube
-item.shell_5inch_ap.name=5-inch AP Shell
-item.shell_25mm.name=25mm Shell
-item.shell_20mm.name=20mm Shell
-item.sm2.name=SM-2 Standard Missile
-item.essm.name=ESSM
-item.harpoon.name=RGM-84 Harpoon
-item.tomahawk.name=BGM-109 Tomahawk
-item.mk46.name=Mk46 Torpedo
-item.mk48.name=Mk48 Torpedo
-tile.sps67_radar.name=SPS-67 Surface Search Radar
-tile.sqs53_sonar.name=SQS-53 Sonar
+
+# Submarine Weapons
+tile.sub_torpedo.name=Submarine Torpedo Tube
+tile.sub_vls_8.name=Submarine VLS (8-cell)
+tile.sub_vls_16.name=Submarine VLS (16-cell)
+tile.sub_vls_ssbn_8.name=Submarine VLS SSBN (8-cell)
+tile.sub_vls_ssbn_16.name=Submarine VLS SSBN (16-cell)
+tile.sub_vls_ssgn_8.name=Submarine VLS SSGN (8-cell)
+tile.sub_vls_ssgn_16.name=Submarine VLS SSGN (16-cell)
+
+# CIC / Carrier
 tile.large_display.name=Large Display
 tile.operator_console.name=Operator Console
 tile.cic_decoration.name=CIC Decoration
@@ -39,21 +51,30 @@ tile.elevator.name=Flight Deck Elevator
 tile.weapon_elevator.name=Weapon Elevator
 tile.catapult.name=Catapult
 tile.arresting_wire.name=Arresting Wire
+
+# Hull
 tile.hull_panel.name=Hull Panel
 tile.hull_structure.name=Hull Structure
 tile.submarine_equip.name=Submarine Equipment
 tile.ammo_storage.name=Ammo Storage
-tile.mk41_vls_8.name=Mk41 VLS (8-cell)
-tile.mk41_vls_16.name=Mk41 VLS (16-cell)
-tile.mk41_vls_32.name=Mk41 VLS (32-cell)
-tile.mk41_vls_64.name=Mk41 VLS (64-cell)
-tile.sub_torpedo.name=Submarine Torpedo Tube
-tile.sub_vls_8.name=Submarine VLS (8-cell)
-tile.sub_vls_16.name=Submarine VLS (16-cell)
-item.sub_ssm.name=Sub-launched SSM
+
+# Ammo - Shells
+item.shell_5inch.name=5-inch Shell (HE)
+item.shell_5inch_ap.name=5-inch Shell (AP)
+item.shell_25mm.name=25mm Shell
+item.shell_20mm.name=20mm Shell
+
+# Ammo - Missiles
+item.sm2.name=SM-2 Standard Missile
+item.essm.name=ESSM (RIM-162)
+item.harpoon.name=RGM-84 Harpoon
+item.tomahawk.name=BGM-109 Tomahawk
+
+# Ammo - Sub
+item.sub_ssm.name=Sub-launched SSM (UUM-125)
 item.sub_cruise.name=Sub-launched Cruise Missile
-item.slbm.name=SLBM
-tile.sub_vls_ssbn_8.name=Submarine VLS SSBN (1-cell)
-tile.sub_vls_ssbn_16.name=Submarine VLS SSBN (1-cell)
-tile.sub_vls_ssgn_8.name=Submarine VLS SSGN (8-cell)
-tile.sub_vls_ssgn_16.name=Submarine VLS SSGN (16-cell)
+item.slbm.name=Trident II D5 SLBM
+
+# Ammo - Torpedoes
+item.mk46.name=Mk46 Torpedo
+item.mk48.name=Mk48 ADCAP Torpedo

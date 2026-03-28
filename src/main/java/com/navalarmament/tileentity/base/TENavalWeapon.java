@@ -76,6 +76,8 @@ public abstract class TENavalWeapon extends TENavalBase {
     protected void onServerTick() {
         if (engagementMode == 0 || currentTarget == null) return;
         if (currentTarget.entity.isDead) { currentTarget = null; return; }
+        // 固定武装（VLS等）はエイム不要で即発射
+        if (getRotationSpeed() == 0f) { fire(); return; }
         rotateToTarget();
         if (isAimed()) fire();
     }

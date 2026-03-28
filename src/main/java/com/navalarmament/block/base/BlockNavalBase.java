@@ -2,8 +2,6 @@ package com.navalarmament.block.base;
 
 import com.navalarmament.gui.GuiHandler;
 import com.navalarmament.init.NavalCreativeTabs;
-import com.navalarmament.system.CableNetwork;
-import com.navalarmament.tileentity.base.ICableConnectable;
 import com.navalarmament.tileentity.base.TENavalWeapon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -20,24 +18,6 @@ public abstract class BlockNavalBase extends Block {
 
     @Override
     public boolean hasTileEntity(int metadata) { return true; }
-
-    @Override
-    public void onBlockAdded(World world, int x, int y, int z) {
-        if (!world.isRemote) {
-            TileEntity te = world.getTileEntity(x, y, z);
-            if (te instanceof ICableConnectable) {
-                CableNetwork.getInstance().onDeviceConnected(world, x, y, z);
-            }
-        }
-    }
-
-    @Override
-    public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-        if (!world.isRemote) {
-            CableNetwork.getInstance().onCableRemoved(world, x, y, z);
-        }
-        super.breakBlock(world, x, y, z, block, meta);
-    }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z,
