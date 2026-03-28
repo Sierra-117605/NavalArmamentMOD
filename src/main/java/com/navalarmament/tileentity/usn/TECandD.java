@@ -2,6 +2,7 @@ package com.navalarmament.tileentity.usn;
 
 import com.navalarmament.block.common.BlockNavalCable;
 import com.navalarmament.block.common.BlockNavalDummy;
+import com.navalarmament.network.NavalPacketHandler;
 import com.navalarmament.system.TargetData;
 import com.navalarmament.tileentity.base.TENavalBase;
 import net.minecraft.block.Block;
@@ -17,35 +18,67 @@ import java.util.Set;
 
 public class TECandD extends TENavalBase {
 
+    /** サーバー側の統合済みターゲットリスト */
     private final List<TargetData> integratedTargets = new ArrayList<TargetData>();
+
+    /** クライアント側の表示用データ（パケット同期済み） */
+    public static class ClientTargetInfo {
+        public String entityName;
+        public String targetTypeName;
+        public int distance;
+        public boolean assigned;
+    }
+    private final List<ClientTargetInfo> clientTargets = new ArrayList<ClientTargetInfo>();
+
+    public List<ClientTargetInfo> getClientTargets() { return clientTargets; }
+    public void setClientTargets(List<ClientTargetInfo> list) {
+        clientTargets.clear();
+        clientTargets.addAll(list);
+    }
 
     public TECandD() { super(20); }
 
+    private static final long TARGET_TTL_MS = 3000L;
+
     public void receiveTargets(List<TargetData> targets) {
-        com.navalarmament.NavalArmamentMod.logger.info("C&D receiveTargets called: " + targets.size() + " incoming, current=" + integratedTargets.size());
         for (TargetData td : targets) {
-            boolean found = false;
-            for (TargetData existing : integratedTargets) {
+            // Replace existing entry so position/distance/detectedAt stay fresh
+            Iterator<TargetData> it2 = integratedTargets.iterator();
+            boolean assigned = false;
+            int awx = 0, awy = 0, awz = 0;
+            while (it2.hasNext()) {
+                TargetData existing = it2.next();
                 if (existing.entity.getEntityId() == td.entity.getEntityId()) {
-                    found = true;
+                    assigned = existing.assigned;
+                    awx = existing.assignedWeaponX;
+                    awy = existing.assignedWeaponY;
+                    awz = existing.assignedWeaponZ;
+                    it2.remove();
                     break;
                 }
             }
-            if (!found) integratedTargets.add(td);
+            td.assigned = assigned;
+            td.assignedWeaponX = awx;
+            td.assignedWeaponY = awy;
+            td.assignedWeaponZ = awz;
+            integratedTargets.add(td);
         }
-        Iterator<TargetData> it = integratedTargets.iterator();
-        while (it.hasNext()) { if (it.next().entity.isDead) it.remove(); }
     }
 
     @Override
     protected void onServerTick() {
+        long now = System.currentTimeMillis();
         Iterator<TargetData> it = integratedTargets.iterator();
-        while (it.hasNext()) { if (it.next().entity.isDead) it.remove(); }
+        while (it.hasNext()) {
+            TargetData td = it.next();
+            if (td.entity.isDead || now - td.detectedAt > TARGET_TTL_MS) it.remove();
+        }
+        // クライアント側GUIへ同期（空リストも送信してクリア）
+        NavalPacketHandler.sendCandDSync(worldObj, xCoord, yCoord, zCoord, integratedTargets);
         sendToWCS();
     }
 
     private void sendToWCS() {
-        com.navalarmament.NavalArmamentMod.logger.info("C&D sendToWCS: " + integratedTargets.size() + " targets");
         if (integratedTargets.isEmpty()) return;
 
         List<TEWCS> wcsList = findWCSViaBFS();

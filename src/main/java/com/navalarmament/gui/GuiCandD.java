@@ -1,6 +1,5 @@
 package com.navalarmament.gui;
 
-import com.navalarmament.system.TargetData;
 import com.navalarmament.tileentity.usn.TECandD;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -27,7 +26,7 @@ public class GuiCandD extends GuiScreen {
 
     @Override
     public void drawScreen(int mx, int my, float partial) {
-        List<TargetData> targets = candd.getIntegratedTargets();
+        List<TECandD.ClientTargetInfo> targets = candd.getClientTargets();
         int rows   = Math.max(targets.size(), 1);
         int guiH   = 52 + rows * 10 + 14;
         int gx     = (width  - GUI_W) / 2;
@@ -49,14 +48,14 @@ public class GuiCandD extends GuiScreen {
             fontRendererObj.drawString("--- NO CONTACTS TRACKED ---", gx + 60, gy + 32, COL_DIM);
         } else {
             for (int i = 0; i < targets.size(); i++) {
-                TargetData td = targets.get(i);
+                TECandD.ClientTargetInfo td = targets.get(i);
                 int ty = gy + 31 + i * 10;
 
-                String name = td.entity.getClass().getSimpleName().replace("Entity", "");
+                String name = td.entityName;
                 if (name.length() > 18) name = name.substring(0, 17) + ".";
 
-                String type = td.targetType != null ? td.targetType.name() : "UNK";
-                String dist = (int) td.distance + "m";
+                String type = td.targetTypeName;
+                String dist = td.distance + "m";
                 String sts  = td.assigned ? "ASSN" : "TRCK";
                 int stsColor = td.assigned ? COL_ASSN : COL_TEXT;
 

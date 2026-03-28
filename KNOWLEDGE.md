@@ -118,6 +118,18 @@ public IMessage onMessage(final AmmoSyncPacket pkt, MessageContext ctx) {
 **原因**: 64÷9=7余1、9列では割り切れない
 **解決**: VLS専用に8列（getGuiColumns()=8）を実装。64÷8=8行でぴったり
 
+### 20. C&D GUIがCONTACTS:0になる原因と修正
+**症状**: センサー・ケーブル・C&D・WCSを設置してエンダーマンを近くにスポーンさせてもC&D GUIが「CONTACTS: 0」のまま
+**原因1**: GuiCandDがクライアント側のTECandDを参照。クライアント側のintegratedTargetsはサーバーから同期されないため常に空
+**原因2**: EntityEndermanはEntityMobを継承しておらず、IMobインターフェースのみ実装。`instanceof EntityMob`でミス
+**原因3**: TENavalSensor.findCandDViaBFS()のBFSループ内でBlockNavalDummyをチェックしていなかった（初期シードには両方入っていたが、BFS拡張ではBlockNavalCableのみ）
+**解決**:
+1. CandDSyncPacket (id=3, Server→Client) を追加。サーバーtickごとに半径64ブロック内のクライアントへ送信
+2. TECandD.ClientTargetInfo（表示用DTO: entityName, targetTypeName, distance, assigned）を追加
+3. GuiCandDはclientTargetsを表示
+4. `instanceof EntityMob` → `instanceof IMob`に変更
+5. BFSループに `|| b instanceof BlockNavalDummy` を追加
+
 ### 19. リアリズム設計方針
 - VLS（Mk41・SubVLS）: stackLimit=1（1セル1発）
 - SSBN VLS: stackLimit=1（SLBM）

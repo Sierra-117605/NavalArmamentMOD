@@ -1,10 +1,11 @@
 package com.navalarmament.tileentity.base;
 
 import com.navalarmament.block.common.BlockNavalCable;
+import com.navalarmament.block.common.BlockNavalDummy;
 import com.navalarmament.system.TargetData;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ public abstract class TENavalSensor extends TENavalBase {
     @Override
     protected void onServerTick() {
         detectedTargets.clear();
-        com.navalarmament.NavalArmamentMod.logger.info("Sensor tick at " + xCoord + "," + yCoord + "," + zCoord + " range=" + getScanRange());
         int r = getScanRange();
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(
             null,
@@ -34,20 +34,17 @@ public abstract class TENavalSensor extends TENavalBase {
                 xCoord + r, yCoord + r, zCoord + r));
         for (Entity e : entities) {
             if (e == null || e.isDead) continue;
-            if (!(e instanceof EntityMob)) continue;
+            if (!(e instanceof IMob)) continue;
             detectedTargets.add(new TargetData(e, xCoord, yCoord, zCoord));
-            com.navalarmament.NavalArmamentMod.logger.info("  detected: " + e.getClass().getSimpleName() + " at " + (int)e.posX + "," + (int)e.posY + "," + (int)e.posZ);
         }
         sendToCanDD();
     }
 
     private void sendToCanDD() {
-        com.navalarmament.NavalArmamentMod.logger.info("  sendToCanDD: " + detectedTargets.size() + " targets");
         if (detectedTargets.isEmpty()) return;
 
         // CableNetworkに依存せず、BFSで直接C&Dを探す
         List<com.navalarmament.tileentity.usn.TECandD> candds = findCandDViaBFS();
-        com.navalarmament.NavalArmamentMod.logger.info("  found C&D via BFS: " + candds.size());
         for (com.navalarmament.tileentity.usn.TECandD candd : candds) {
             candd.receiveTargets(detectedTargets);
         }
@@ -80,7 +77,7 @@ public abstract class TENavalSensor extends TENavalBase {
                 int nx = cx + d[0], ny = cy + d[1], nz = cz + d[2];
                 String k = nx + "," + ny + "," + nz;
                 Block b = worldObj.getBlock(nx, ny, nz);
-                if (b instanceof BlockNavalCable) {
+                if (b instanceof BlockNavalCable || b instanceof BlockNavalDummy) {
                     if (visited.add(k)) queue.add(new int[]{nx, ny, nz});
                 } else {
                     // ケーブル以外のブロックのTEを確認

@@ -1,8 +1,11 @@
 package com.navalarmament.network;
 
 import com.navalarmament.NavalArmamentMod;
+import com.navalarmament.system.TargetData;
 import com.navalarmament.tileentity.base.TENavalWeapon;
+import com.navalarmament.tileentity.usn.TECandD;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -13,6 +16,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NavalPacketHandler {
     public static final SimpleNetworkWrapper INSTANCE =
         cpw.mods.fml.common.network.NetworkRegistry.INSTANCE
@@ -22,6 +28,7 @@ public class NavalPacketHandler {
         INSTANCE.registerMessage(ModeChangeHandler.class,    ModeChangePacket.class,    0, Side.SERVER);
         INSTANCE.registerMessage(WeaponSettingHandler.class, WeaponSettingPacket.class, 1, Side.SERVER);
         INSTANCE.registerMessage(AmmoSyncHandler.class,      AmmoSyncPacket.class,      2, Side.CLIENT);
+        INSTANCE.registerMessage(CandDSyncHandler.class,     CandDSyncPacket.class,     3, Side.CLIENT);
     }
 
     public static void sendModeChange(int x, int y, int z, int mode) {
@@ -34,6 +41,12 @@ public class NavalPacketHandler {
 
     public static void sendAmmoSync(net.minecraft.entity.player.EntityPlayerMP player, int x, int y, int z, int ammo) {
         INSTANCE.sendTo(new AmmoSyncPacket(x, y, z, ammo), player);
+    }
+
+    public static void sendCandDSync(net.minecraft.world.World world, int x, int y, int z, List<TargetData> targets) {
+        INSTANCE.sendToAllAround(
+            new CandDSyncPacket(x, y, z, targets),
+            new NetworkRegistry.TargetPoint(world.provider.dimensionId, x, y, z, 64.0));
     }
 
     // ModeChangePacket
@@ -120,6 +133,76 @@ public class NavalPacketHandler {
             TileEntity te = world.getTileEntity(pkt.x, pkt.y, pkt.z);
             if (te instanceof TENavalWeapon)
                 ((TENavalWeapon) te).setClientAmmoCount(pkt.ammo);
+            return null;
+        }
+    }
+
+    // CandDSyncPacket (Server -> Client): C&DターゲットリストをGUI表示用に同期
+    public static class CandDSyncPacket implements IMessage {
+        public int x, y, z;
+        public List<String> names     = new ArrayList<String>();
+        public List<String> types     = new ArrayList<String>();
+        public List<Integer> distances = new ArrayList<Integer>();
+        public List<Boolean> assigned  = new ArrayList<Boolean>();
+
+        public CandDSyncPacket() {}
+
+        public CandDSyncPacket(int x, int y, int z, List<TargetData> targets) {
+            this.x = x; this.y = y; this.z = z;
+            for (TargetData td : targets) {
+                names.add(td.entity.getClass().getSimpleName().replace("Entity", ""));
+                types.add(td.targetType != null ? td.targetType.name() : "UNK");
+                distances.add((int) td.distance);
+                assigned.add(td.assigned);
+            }
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf) {
+            buf.writeInt(x); buf.writeInt(y); buf.writeInt(z);
+            buf.writeInt(names.size());
+            for (int i = 0; i < names.size(); i++) {
+                ByteBufUtils.writeUTF8String(buf, names.get(i));
+                ByteBufUtils.writeUTF8String(buf, types.get(i));
+                buf.writeInt(distances.get(i));
+                buf.writeBoolean(assigned.get(i));
+            }
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf) {
+            x = buf.readInt(); y = buf.readInt(); z = buf.readInt();
+            int count = buf.readInt();
+            names     = new ArrayList<String>();
+            types     = new ArrayList<String>();
+            distances = new ArrayList<Integer>();
+            assigned  = new ArrayList<Boolean>();
+            for (int i = 0; i < count; i++) {
+                names.add(ByteBufUtils.readUTF8String(buf));
+                types.add(ByteBufUtils.readUTF8String(buf));
+                distances.add(buf.readInt());
+                assigned.add(buf.readBoolean());
+            }
+        }
+    }
+
+    public static class CandDSyncHandler implements IMessageHandler<CandDSyncPacket, IMessage> {
+        @Override
+        public IMessage onMessage(CandDSyncPacket pkt, MessageContext ctx) {
+            net.minecraft.world.World world = Minecraft.getMinecraft().theWorld;
+            if (world == null) return null;
+            TileEntity te = world.getTileEntity(pkt.x, pkt.y, pkt.z);
+            if (!(te instanceof TECandD)) return null;
+            List<TECandD.ClientTargetInfo> list = new ArrayList<TECandD.ClientTargetInfo>();
+            for (int i = 0; i < pkt.names.size(); i++) {
+                TECandD.ClientTargetInfo info = new TECandD.ClientTargetInfo();
+                info.entityName     = pkt.names.get(i);
+                info.targetTypeName = pkt.types.get(i);
+                info.distance       = pkt.distances.get(i);
+                info.assigned       = pkt.assigned.get(i);
+                list.add(info);
+            }
+            ((TECandD) te).setClientTargets(list);
             return null;
         }
     }
