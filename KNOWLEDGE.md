@@ -85,3 +85,9 @@ Adoptium JDK 8: https://adoptium.net/temurin/releases/?version=8
 MC 1.7.10 サーバーJAR: https://mcversions.net/download/1.7.10
 GitHub: https://github.com/Sierra-117605/NavalArmamentMOD
 Meshy.ai: https://www.meshy.ai/ja
+
+## Java 6互換の注意事項（1.7.10 Forge）
+- ラムダ式（->）使用不可 → for/iteratorループを使う
+- removeIf() 使用不可 → iteratorで手動削除
+- Stream API 使用不可
+- Arrays.asList()でジェネリクスを使う場合は明示的な型キャストが必要

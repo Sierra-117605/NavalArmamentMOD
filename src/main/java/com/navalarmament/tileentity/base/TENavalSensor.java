@@ -2,68 +2,57 @@ package com.navalarmament.tileentity.base;
 
 import com.navalarmament.system.CableNetwork;
 import com.navalarmament.system.TargetData;
-import com.navalarmament.system.ThreatEvaluator;
+import com.navalarmament.system.TargetType;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.AxisAlignedBB;
-
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class TENavalSensor extends TENavalBase {
 
+    protected List<TargetData> detectedTargets = new ArrayList<TargetData>();
+
     public TENavalSensor(int updateInterval) { super(updateInterval); }
+
+    public abstract int getScanRange();
 
     @Override
     protected void onServerTick() {
-        scan();
-    }
-
-    protected void scan() {
+        detectedTargets.clear();
         int r = getScanRange();
-        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(
-            xCoord-r, yCoord, zCoord-r,
-            xCoord+r, yCoord+r, zCoord+r);
-
-        List entities = worldObj.getEntitiesWithinAABB(Entity.class, box);
-        List<TargetData> targets = new ArrayList<TargetData>();
-        long tick = worldObj.getTotalWorldTime();
-
-        for (Object obj : entities) {
-            Entity e = (Entity) obj;
+        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(
+            null,
+            net.minecraft.util.AxisAlignedBB.getBoundingBox(
+                xCoord - r, yCoord - r, zCoord - r,
+                xCoord + r, yCoord + r, zCoord + r));
+        for (Entity e : entities) {
             if (e == null || e.isDead) continue;
-            double dx = e.posX - xCoord;
-            double dy = e.posY - yCoord;
-            double dz = e.posZ - zCoord;
-            double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-            TargetData td = new TargetData(e.getEntityId(),
-                e.posX, e.posY, e.posZ,
-                e.motionX, e.motionY, e.motionZ,
-                dist, tick);
-            td.threatLevel = ThreatEvaluator.evaluate(e, td);
-            targets.add(td);
+            if (!(e instanceof EntityMob)) continue;
+            detectedTargets.add(new TargetData(e, xCoord, yCoord, zCoord));
         }
-
-        if (!targets.isEmpty()) {
-            propagateToCandD(targets);
-        }
+        sendToCanDD();
     }
 
-    private void propagateToCandD(List<TargetData> targets) {
+    private void sendToCanDD() {
+        if (detectedTargets.isEmpty()) return;
         UUID netId = CableNetwork.getInstance().getNetworkId(xCoord, yCoord, zCoord);
         if (netId == null) return;
-        List<String> candds = CableNetwork.getInstance().getCandDPositions(netId);
-        for (String pos : candds) {
-            String[] parts = pos.split(",");
-            int x = Integer.parseInt(parts[0]);
-            int y = Integer.parseInt(parts[1]);
-            int z = Integer.parseInt(parts[2]);
+        Set<String> members = CableNetwork.getInstance().getNetworkMembers(netId);
+        if (members == null) return;
+        for (String pos : members) {
+            String[] p = pos.split(",");
+            int x = Integer.parseInt(p[0]);
+            int y = Integer.parseInt(p[1]);
+            int z = Integer.parseInt(p[2]);
             net.minecraft.tileentity.TileEntity te = worldObj.getTileEntity(x, y, z);
             if (te instanceof com.navalarmament.tileentity.usn.TECandD) {
-                ((com.navalarmament.tileentity.usn.TECandD) te).receiveTargets(targets);
+                ((com.navalarmament.tileentity.usn.TECandD) te).receiveTargets(detectedTargets);
             }
         }
     }
 
-    public abstract int getScanRange();
+    public List<TargetData> getDetectedTargets() { return detectedTargets; }
 }

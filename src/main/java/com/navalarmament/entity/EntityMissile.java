@@ -11,6 +11,17 @@ public class EntityMissile extends EntityNavalProjectile {
     private boolean hasTarget = false;
 
     public EntityMissile(World world) { super(world); }
+    public EntityMissile(World world, double x, double y, double z,
+                          double vx, double vy, double vz,
+                          float damage, float explosionRadius, Entity target) {
+        this(world, x, y, z, vx, vy, vz, damage, explosionRadius);
+        if (target != null) {
+            this.targetX = target.posX;
+            this.targetY = target.posY;
+            this.targetZ = target.posZ;
+            this.hasTarget = true;
+        }
+    }
 
     public EntityMissile(World world, double x, double y, double z,
                           double vx, double vy, double vz,

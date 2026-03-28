@@ -37,7 +37,8 @@ public class TEAmmoStorage extends TENavalBase implements IInventory {
             if (x == xCoord && y == yCoord && z == zCoord) continue;
             TileEntity te = worldObj.getTileEntity(x, y, z);
             if (te instanceof TENavalWeapon) {
-                supplyWeapon((TENavalWeapon) te);
+                TENavalWeapon w = (TENavalWeapon) te;
+                if (w.canAutoReload()) supplyWeapon(w);
             }
         }
     }
