@@ -34,7 +34,6 @@ public class TEWCS extends TENavalBase {
         if (targets.isEmpty()) return;
 
         List<TENavalWeapon> weapons = findWeaponsViaBFS();
-        com.navalarmament.NavalArmamentMod.logger.info("WCS tick: " + targets.size() + " targets, " + weapons.size() + " weapons");
 
         for (TargetData td : targets) {
             td.assigned = false;
