@@ -1,5 +1,6 @@
 package com.navalarmament.item.base;
 
+import com.navalarmament.init.NavalCreativeTabs;
 import com.navalarmament.system.TargetType;
 import net.minecraft.item.Item;
 import java.util.List;
@@ -16,6 +17,7 @@ public abstract class ItemNavalAmmo extends Item implements INavalAmmo {
         this.damage          = damage;
         this.speed           = speed;
         this.explosionRadius = explosionRadius;
+        setCreativeTab(NavalCreativeTabs.NAVAL_TAB);
     }
 
     @Override public int   getRange()           { return range; }
