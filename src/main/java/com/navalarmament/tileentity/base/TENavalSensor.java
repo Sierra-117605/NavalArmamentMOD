@@ -5,7 +5,8 @@ import com.navalarmament.block.common.BlockNavalDummy;
 import com.navalarmament.system.TargetData;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.ArrayList;
@@ -34,7 +35,9 @@ public abstract class TENavalSensor extends TENavalBase {
                 xCoord + r, yCoord + r, zCoord + r));
         for (Entity e : entities) {
             if (e == null || e.isDead) continue;
-            if (!(e instanceof IMob)) continue;
+            // EntityMob継承の標準敵対Mob + エンダーマンを検知
+            // EntitySlimeはEntityMobを継承しないため除外される
+            if (!(e instanceof EntityMob) && !(e instanceof EntityEnderman)) continue;
             detectedTargets.add(new TargetData(e, xCoord, yCoord, zCoord));
         }
         sendToCanDD();
