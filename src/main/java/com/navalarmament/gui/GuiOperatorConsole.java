@@ -31,7 +31,7 @@ public class GuiOperatorConsole extends GuiContainer {
     private static final int COL_TARGET  = 200;
 
     public GuiOperatorConsole(InventoryPlayer playerInv, TEOperatorConsole console) {
-        super(new ContainerOperatorConsole());
+        super(new ContainerOperatorConsole(playerInv));
         this.console = console;
         xSize = 240;
         ySize = 180;
