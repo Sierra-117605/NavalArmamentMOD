@@ -1,6 +1,8 @@
 package com.navalarmament.gui;
 
 import com.navalarmament.tileentity.base.TENavalWeapon;
+import com.navalarmament.network.NavalPacketHandler;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -9,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiWeapon extends GuiContainer {
 
     private final TENavalWeapon weapon;
+    private final int weaponSlots;
 
     private static final int BG      = 0xFFC6C6C6;
     private static final int SHADOW  = 0xFF555555;
@@ -22,8 +25,27 @@ public class GuiWeapon extends GuiContainer {
     public GuiWeapon(InventoryPlayer playerInv, TENavalWeapon weapon) {
         super(new ContainerWeapon(playerInv, weapon));
         this.weapon = weapon;
+        this.weaponSlots = weapon.getAmmoInventory().getSizeInventory();
         xSize = 176;
         ySize = 162;
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        // モード切替ボタン
+        buttonList.add(new GuiButton(0, guiLeft + xSize - 60, guiTop + 8, 54, 12, getModeStr()));
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 0) {
+            int next = (weapon.getEngagementMode() + 1) % 3;
+            weapon.setEngagementMode(next);
+            NavalPacketHandler.sendModeChange(
+                weapon.xCoord, weapon.yCoord, weapon.zCoord, next);
+            button.displayString = getModeStr(next);
+        }
     }
 
     private void drawPanel(int x, int y, int w, int h) {
@@ -34,15 +56,13 @@ public class GuiWeapon extends GuiContainer {
         drawRect(x+w-1, y, x+w, y+h, SHADOW);
     }
 
-    // Minecraftのスロットはx,yから18x18の領域
-    // 背景はx-1,y-1から20x20で描画するとぴったり合う
     private void drawSlotBg(int x, int y) {
-        drawRect(x-1, y-1, x+17, y+17, SHADOW);
-        drawRect(x-1, y-1, x+17, y-1+1, SHADOW);
-        drawRect(x-1, y-1, x-1+1, y+17, SHADOW);
-        drawRect(x-1, y+16, x+17, y+17, HILIGHT);
-        drawRect(x+16, y-1, x+17, y+17, HILIGHT);
-        drawRect(x, y, x+16, y+16, SLOT_BG);
+        drawRect(x, y, x+18, y+18, SLOT_BG);
+        drawRect(x, y, x+18, y+1, SHADOW);
+        drawRect(x, y, x+1, y+18, SHADOW);
+        drawRect(x, y+17, x+18, y+18, HILIGHT);
+        drawRect(x+17, y, x+18, y+18, HILIGHT);
+        drawRect(x+1, y+1, x+17, y+17, SLOT_BG);
     }
 
     @Override
@@ -52,8 +72,10 @@ public class GuiWeapon extends GuiContainer {
         drawRect(guiLeft+4, guiTop+68,  guiLeft+xSize-4, guiTop+69,  SHADOW);
         drawRect(guiLeft+4, guiTop+132, guiLeft+xSize-4, guiTop+133, SHADOW);
 
-        drawSlotBg(guiLeft+8,    guiTop+AMMO_Y);
-        drawSlotBg(guiLeft+8+18, guiTop+AMMO_Y);
+        for (int i = 0; i < weaponSlots && i < 9; i++)
+            drawSlotBg(guiLeft+8+i*18, guiTop+AMMO_Y);
+        for (int i = 9; i < weaponSlots && i < 18; i++)
+            drawSlotBg(guiLeft+8+(i-9)*18, guiTop+AMMO_Y+18);
 
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
@@ -69,19 +91,27 @@ public class GuiWeapon extends GuiContainer {
             ? weapon.getBlockType().getLocalizedName() : "Weapon";
         fontRendererObj.drawString(name, 8, 8, 0x404040);
 
-        int ix = 8 + 2*18 + 6;
-        ItemStack s0 = weapon.getAmmoInventory().getStackInSlot(0);
-        ItemStack s1 = weapon.getAmmoInventory().getStackInSlot(1);
-        if (s0 != null) fontRendererObj.drawString(s0.getDisplayName() + " x" + s0.stackSize, ix, AMMO_Y,    0x404040);
-        else            fontRendererObj.drawString("Slot 1: empty",                             ix, AMMO_Y,    0x888888);
-        if (s1 != null) fontRendererObj.drawString(s1.getDisplayName() + " x" + s1.stackSize, ix, AMMO_Y+11, 0x404040);
-        else            fontRendererObj.drawString("Slot 2: empty",                             ix, AMMO_Y+11, 0x888888);
-        fontRendererObj.drawString("Mode: " + getModeStr(), ix, AMMO_Y+28, 0x404040);
+        if (weaponSlots <= 2) {
+            int ix = 8 + weaponSlots * 18 + 6;
+            for (int i = 0; i < weaponSlots; i++) {
+                ItemStack s = weapon.getAmmoInventory().getStackInSlot(i);
+                if (s != null)
+                    fontRendererObj.drawString(s.getDisplayName() + " x" + s.stackSize,
+                        ix, AMMO_Y + i * 11, 0x404040);
+                else
+                    fontRendererObj.drawString("Slot " + (i+1) + ": empty",
+                        ix, AMMO_Y + i * 11, 0x888888);
+            }
+        }
         fontRendererObj.drawString("Inventory", 8, 70, 0x404040);
     }
 
     private String getModeStr() {
-        switch (weapon.getEngagementMode()) {
+        return getModeStr(weapon.getEngagementMode());
+    }
+
+    private String getModeStr(int mode) {
+        switch (mode) {
             case 0: return "MANUAL";
             case 1: return "SEMI";
             case 2: return "AUTO";

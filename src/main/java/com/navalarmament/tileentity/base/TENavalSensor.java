@@ -1,15 +1,18 @@
 package com.navalarmament.tileentity.base;
 
-import com.navalarmament.system.CableNetwork;
+import com.navalarmament.block.common.BlockNavalCable;
 import com.navalarmament.system.TargetData;
-import com.navalarmament.system.TargetType;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.world.World;
+import net.minecraft.tileentity.TileEntity;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
-import java.util.UUID;
 
 public abstract class TENavalSensor extends TENavalBase {
 
@@ -22,6 +25,7 @@ public abstract class TENavalSensor extends TENavalBase {
     @Override
     protected void onServerTick() {
         detectedTargets.clear();
+        com.navalarmament.NavalArmamentMod.logger.info("Sensor tick at " + xCoord + "," + yCoord + "," + zCoord + " range=" + getScanRange());
         int r = getScanRange();
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(
             null,
@@ -32,26 +36,62 @@ public abstract class TENavalSensor extends TENavalBase {
             if (e == null || e.isDead) continue;
             if (!(e instanceof EntityMob)) continue;
             detectedTargets.add(new TargetData(e, xCoord, yCoord, zCoord));
+            com.navalarmament.NavalArmamentMod.logger.info("  detected: " + e.getClass().getSimpleName() + " at " + (int)e.posX + "," + (int)e.posY + "," + (int)e.posZ);
         }
         sendToCanDD();
     }
 
     private void sendToCanDD() {
+        com.navalarmament.NavalArmamentMod.logger.info("  sendToCanDD: " + detectedTargets.size() + " targets");
         if (detectedTargets.isEmpty()) return;
-        UUID netId = CableNetwork.getInstance().getNetworkId(xCoord, yCoord, zCoord);
-        if (netId == null) return;
-        Set<String> members = CableNetwork.getInstance().getNetworkMembers(netId);
-        if (members == null) return;
-        for (String pos : members) {
-            String[] p = pos.split(",");
-            int x = Integer.parseInt(p[0]);
-            int y = Integer.parseInt(p[1]);
-            int z = Integer.parseInt(p[2]);
-            net.minecraft.tileentity.TileEntity te = worldObj.getTileEntity(x, y, z);
-            if (te instanceof com.navalarmament.tileentity.usn.TECandD) {
-                ((com.navalarmament.tileentity.usn.TECandD) te).receiveTargets(detectedTargets);
+
+        // CableNetworkに依存せず、BFSで直接C&Dを探す
+        List<com.navalarmament.tileentity.usn.TECandD> candds = findCandDViaBFS();
+        com.navalarmament.NavalArmamentMod.logger.info("  found C&D via BFS: " + candds.size());
+        for (com.navalarmament.tileentity.usn.TECandD candd : candds) {
+            candd.receiveTargets(detectedTargets);
+        }
+    }
+
+    private List<com.navalarmament.tileentity.usn.TECandD> findCandDViaBFS() {
+        List<com.navalarmament.tileentity.usn.TECandD> result = new ArrayList<com.navalarmament.tileentity.usn.TECandD>();
+        Set<String> visited = new HashSet<String>();
+        Queue<int[]> queue = new LinkedList<int[]>();
+        int[][] dirs = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
+
+        // センサーの隣からBFS開始
+        for (int[] d : dirs) {
+            int nx = xCoord + d[0], ny = yCoord + d[1], nz = zCoord + d[2];
+            String k = nx + "," + ny + "," + nz;
+            Block b = worldObj.getBlock(nx, ny, nz);
+            if ((b instanceof BlockNavalCable || b instanceof com.navalarmament.block.common.BlockNavalDummy) && visited.add(k)) {
+                queue.add(new int[]{nx, ny, nz});
             }
         }
+
+        int limit = 1000; // 無限ループ防止
+        while (!queue.isEmpty() && limit-- > 0) {
+            int[] cur = queue.poll();
+            int cx = cur[0], cy = cur[1], cz = cur[2];
+
+            // このケーブル位置のTEを確認（C&Dかどうか）
+            // ケーブル自体の隣のデバイスも確認
+            for (int[] d : dirs) {
+                int nx = cx + d[0], ny = cy + d[1], nz = cz + d[2];
+                String k = nx + "," + ny + "," + nz;
+                Block b = worldObj.getBlock(nx, ny, nz);
+                if (b instanceof BlockNavalCable) {
+                    if (visited.add(k)) queue.add(new int[]{nx, ny, nz});
+                } else {
+                    // ケーブル以外のブロックのTEを確認
+                    TileEntity te = worldObj.getTileEntity(nx, ny, nz);
+                    if (te instanceof com.navalarmament.tileentity.usn.TECandD) {
+                        if (visited.add(k)) result.add((com.navalarmament.tileentity.usn.TECandD) te);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public List<TargetData> getDetectedTargets() { return detectedTargets; }

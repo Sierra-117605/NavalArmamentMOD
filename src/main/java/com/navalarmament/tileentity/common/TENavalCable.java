@@ -9,8 +9,6 @@ import net.minecraft.world.World;
 public class TENavalCable extends TileEntity {
 
     private boolean[] connected = new boolean[6];
-    private boolean registeredToNetwork = false;
-
     private static final int[][] DIRS = {
         { 0, 0,-1}, { 0, 0, 1},
         { 1, 0, 0}, {-1, 0, 0},
@@ -20,9 +18,10 @@ public class TENavalCable extends TileEntity {
     @Override
     public void updateEntity() {
         if (worldObj == null || worldObj.isRemote) return;
-        if (!registeredToNetwork) {
+        // 未登録なら毎tickで再登録試みる
+        if (CableNetwork.getInstance().getNetworkId(xCoord, yCoord, zCoord) == null) {
+            com.navalarmament.NavalArmamentMod.logger.info("Cable re-registering at " + xCoord + "," + yCoord + "," + zCoord);
             CableNetwork.getInstance().onCablePlaced(worldObj, xCoord, yCoord, zCoord);
-            registeredToNetwork = true;
         }
     }
 

@@ -5,6 +5,7 @@ import com.navalarmament.gui.GuiHandler;
 import com.navalarmament.init.NavalBlocks;
 import com.navalarmament.init.NavalEntities;
 import com.navalarmament.init.NavalItems;
+import com.navalarmament.network.NavalPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -32,6 +33,7 @@ public class NavalArmamentMod {
         ConfigHandler.preInit(event);
         NavalBlocks.register();
         NavalItems.register();
+        NavalPacketHandler.init();
     }
 
     @EventHandler

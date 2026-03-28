@@ -10,18 +10,19 @@ import net.minecraft.item.ItemStack;
 public class ContainerWeapon extends Container {
 
     private final TENavalWeapon weapon;
-    private final int weaponSlots = 2;
+    private final int weaponSlots;
 
     public ContainerWeapon(InventoryPlayer playerInv, TENavalWeapon weapon) {
         this.weapon = weapon;
+        this.weaponSlots = weapon.getAmmoInventory().getSizeInventory();
 
-        // 弾薬スロット2つ（Y=22）
+        // 弾薬スロット（武装ごとのスロット数）
         for (int i = 0; i < weaponSlots; i++) {
             addSlotToContainer(new SlotNavalAmmo(weapon,
                 weapon.getAmmoInventory(), i, 8 + i * 18, 22));
         }
 
-        // プレイヤーインベントリ3行（Y=78から）
+        // プレイヤーインベントリ3行
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlotToContainer(new Slot(playerInv,
@@ -29,11 +30,13 @@ public class ContainerWeapon extends Container {
             }
         }
 
-        // ホットバー（Y=136）
+        // ホットバー
         for (int col = 0; col < 9; col++) {
             addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 136));
         }
     }
+
+    public int getWeaponSlots() { return weaponSlots; }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) { return true; }
