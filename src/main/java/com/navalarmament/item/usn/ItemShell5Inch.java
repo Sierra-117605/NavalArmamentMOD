@@ -10,6 +10,7 @@ public class ItemShell5Inch extends ItemNavalAmmo {
     public ItemShell5Inch() {
         super(1280, 80f, 8f, 1.2f);
         setUnlocalizedName("shell_5inch");
+        setMaxStackSize(64); // 砲弾はマガジン給弾
         setTextureName("navalarmament:shell_5inch");
     }
     @Override

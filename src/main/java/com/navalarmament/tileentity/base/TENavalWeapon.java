@@ -160,16 +160,21 @@ public abstract class TENavalWeapon extends TENavalBase {
         double vy = dy/dist * ammo.getSpeed();
         double vz = dz/dist * ammo.getSpeed();
 
+        // ブロック内部での即爆発防止: 中心+上方1.5ブロックから発射
+        double spawnX = xCoord + 0.5;
+        double spawnY = yCoord + 1.5;
+        double spawnZ = zCoord + 0.5;
+
         Entity projectile;
         if (type == TargetType.SUBSURFACE) {
-            projectile = new EntityTorpedo(worldObj, xCoord, yCoord, zCoord,
+            projectile = new EntityTorpedo(worldObj, spawnX, spawnY, spawnZ,
                 vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius());
         } else if (ammo instanceof ItemNavalAmmo && ammo.getRange() > 1280) {
-            projectile = new EntityMissile(worldObj, xCoord, yCoord, zCoord,
+            projectile = new EntityMissile(worldObj, spawnX, spawnY, spawnZ,
                 vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius(),
                 currentTarget.entity);
         } else {
-            projectile = new EntityShell(worldObj, xCoord, yCoord, zCoord,
+            projectile = new EntityShell(worldObj, spawnX, spawnY, spawnZ,
                 vx, vy, vz, ammo.getDamage(), ammo.getExplosionRadius());
         }
         worldObj.spawnEntityInWorld(projectile);

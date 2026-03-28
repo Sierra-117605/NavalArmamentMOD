@@ -14,6 +14,7 @@ public class ItemESSM extends ItemNavalAmmo {
         super(2560, 150f, 18f, 2.5f);
         setUnlocalizedName("essm");
         setTextureName("navalarmament:essm");
+        setMaxStackSize(4); // Quad-pack: 1セルに4発格納可能
     }
     @Override
     public List<Class<?>> getCompatibleWeapons() {

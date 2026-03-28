@@ -18,6 +18,7 @@ public abstract class ItemNavalAmmo extends Item implements INavalAmmo {
         this.speed           = speed;
         this.explosionRadius = explosionRadius;
         setCreativeTab(NavalCreativeTabs.NAVAL_TAB);
+        setMaxStackSize(1); // ミサイル・魚雷はデフォルト1発/スロット
     }
 
     @Override public int   getRange()           { return range; }
