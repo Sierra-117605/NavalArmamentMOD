@@ -5,29 +5,36 @@ import com.navalarmament.network.NavalPacketHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 public class GuiWeapon extends GuiContainer {
 
     private final TENavalWeapon weapon;
     private final int weaponSlots;
+    private final int ammoRows;
+    private final int sep1Y;
+    private final int invY;
+    private final int sep2Y;
+    private final int hotY;
 
     private static final int BG      = 0xFFC6C6C6;
     private static final int SHADOW  = 0xFF555555;
     private static final int HILIGHT = 0xFFFFFFFF;
     private static final int SLOT_BG = 0xFF8B8B8B;
 
-    private static final int AMMO_Y = 22;
-    private static final int INV_Y  = 78;
-    private static final int HOT_Y  = 136;
-
     public GuiWeapon(InventoryPlayer playerInv, TENavalWeapon weapon) {
         super(new ContainerWeapon(playerInv, weapon));
         this.weapon = weapon;
-        this.weaponSlots = weapon.getAmmoInventory().getSizeInventory();
+        int size = weapon.getAmmoInventory().getSizeInventory();
+        this.weaponSlots = size;
+        int cols = weapon.getGuiColumns();
+        this.ammoRows = (weaponSlots + cols - 1) / cols;
+        this.sep1Y = 22 + ammoRows * 18 + 10;
+        this.invY  = sep1Y + 10;
+        this.sep2Y = invY + 54;
+        this.hotY  = sep2Y + 4;
         xSize = 176;
-        ySize = 162;
+        ySize = hotY + 26;
     }
 
     @Override
@@ -69,20 +76,19 @@ public class GuiWeapon extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partial, int mx, int my) {
         GL11.glColor4f(1, 1, 1, 1);
         drawPanel(guiLeft, guiTop, xSize, ySize);
-        drawRect(guiLeft+4, guiTop+68,  guiLeft+xSize-4, guiTop+69,  SHADOW);
-        drawRect(guiLeft+4, guiTop+132, guiLeft+xSize-4, guiTop+133, SHADOW);
+        drawRect(guiLeft+4, guiTop+sep1Y, guiLeft+xSize-4, guiTop+sep1Y+1, SHADOW);
+        drawRect(guiLeft+4, guiTop+sep2Y, guiLeft+xSize-4, guiTop+sep2Y+1, SHADOW);
 
-        for (int i = 0; i < weaponSlots && i < 9; i++)
-            drawSlotBg(guiLeft+8+i*18, guiTop+AMMO_Y);
-        for (int i = 9; i < weaponSlots && i < 18; i++)
-            drawSlotBg(guiLeft+8+(i-9)*18, guiTop+AMMO_Y+18);
+        int cols = weapon.getGuiColumns();
+        for (int i = 0; i < weaponSlots; i++)
+            drawSlotBg(guiLeft+8+(i%cols)*18, guiTop+22+(i/cols)*18);
 
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                drawSlotBg(guiLeft+8+col*18, guiTop+INV_Y+row*18);
+                drawSlotBg(guiLeft+8+col*18, guiTop+invY+row*18);
 
         for (int col = 0; col < 9; col++)
-            drawSlotBg(guiLeft+8+col*18, guiTop+HOT_Y);
+            drawSlotBg(guiLeft+8+col*18, guiTop+hotY);
     }
 
     @Override
@@ -90,20 +96,7 @@ public class GuiWeapon extends GuiContainer {
         String name = weapon.getBlockType() != null
             ? weapon.getBlockType().getLocalizedName() : "Weapon";
         fontRendererObj.drawString(name, 8, 8, 0x404040);
-
-        if (weaponSlots <= 2) {
-            int ix = 8 + weaponSlots * 18 + 6;
-            for (int i = 0; i < weaponSlots; i++) {
-                ItemStack s = weapon.getAmmoInventory().getStackInSlot(i);
-                if (s != null)
-                    fontRendererObj.drawString(s.getDisplayName() + " x" + s.stackSize,
-                        ix, AMMO_Y + i * 11, 0x404040);
-                else
-                    fontRendererObj.drawString("Slot " + (i+1) + ": empty",
-                        ix, AMMO_Y + i * 11, 0x888888);
-            }
-        }
-        fontRendererObj.drawString("Inventory", 8, 70, 0x404040);
+        fontRendererObj.drawString("Inventory", 8, sep1Y + 2, 0x404040);
     }
 
     private String getModeStr() {

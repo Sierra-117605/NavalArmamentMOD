@@ -91,3 +91,37 @@ Meshy.ai: https://www.meshy.ai/ja
 - removeIf() 使用不可 → iteratorで手動削除
 - Stream API 使用不可
 - Arrays.asList()でジェネリクスを使う場合は明示的な型キャストが必要
+
+---
+
+## 失敗・ハマった実装事例
+
+### 16. 1.7.10でのクライアントパケット処理
+**症状**: `FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask()` → シンボルを見つけられません
+**原因**: `getWorldThread()` は1.7.10に存在しない。`addScheduledTask()` も1.8以降のメソッド
+**解決**: 直接実行する（SimpleNetworkWrapperのClientハンドラはメインスレッドで動く）
+```java
+public IMessage onMessage(final AmmoSyncPacket pkt, MessageContext ctx) {
+    net.minecraft.world.World world = Minecraft.getMinecraft().theWorld;
+    if (world == null) return null;
+    // 直接実行でOK
+}
+```
+
+### 17. VLS GUIのレイアウト崩れ
+**症状**: 弾薬スロットが画面外に飛び出す・当たり判定はあるが見えない
+**原因**: ContainerWeaponが全スロットをy=22の1行に並べていた（9列×n行に対応していなかった）
+**解決**: `col = i % cols`, `row = i / cols` で2次元配置。VLSは8列固定（8の倍数セル数のため）
+
+### 18. VLS64のGUIサイズオーバー
+**症状**: 64セルを9列で表示 → 8行に最終行1セルの不規則レイアウト、GUI高270pxで画面オーバー
+**原因**: 64÷9=7余1、9列では割り切れない
+**解決**: VLS専用に8列（getGuiColumns()=8）を実装。64÷8=8行でぴったり
+
+### 19. リアリズム設計方針
+- VLS（Mk41・SubVLS）: stackLimit=1（1セル1発）
+- SSBN VLS: stackLimit=1（SLBM）
+- SSGN VLS: stackLimit=7（MAC: 1チューブに7発のトマホーク）
+- Harpoon発射機: stackLimit=4（クアッドランチャー）
+- Mk32魚雷発射管: stackLimit=3（トリプルチューブ）
+- 砲類（Mk45・Mk38・Phalanx）: stackLimit=64（マガジン給弾のため大きめのまま）

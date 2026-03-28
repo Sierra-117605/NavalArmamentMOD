@@ -20,6 +20,7 @@ public abstract class TENavalWeapon extends TENavalBase {
     protected int engagementMode = 0; // 0=MANUAL 1=SEMI 2=AUTO
     protected TargetData currentTarget;
     protected float yaw = 0f, pitch = 0f;
+    private int clientAmmoCount = -1; // -1=未同期
 
     // CICからの優先弾種オーバーライド
     private String preferredAmmoClass = "";
@@ -32,6 +33,7 @@ public abstract class TENavalWeapon extends TENavalBase {
     }
 
     public int getAmmoStackLimit() { return 64; }
+    public int getGuiColumns() { return 9; }
     public abstract float getRotationSpeed();
     public IInventory getAmmoInventory() { return ammoInventory; }
     public int getEngagementMode() { return engagementMode; }
@@ -43,7 +45,13 @@ public abstract class TENavalWeapon extends TENavalBase {
 
     public void setCurrentTarget(TargetData target) { assignTarget(target); }
 
+    public void setClientAmmoCount(int count) { this.clientAmmoCount = count; }
+
     public int getAmmoCount() {
+        if (clientAmmoCount >= 0 && net.minecraft.client.Minecraft.getMinecraft() != null
+                && net.minecraft.client.Minecraft.getMinecraft().theWorld != null
+                && net.minecraft.client.Minecraft.getMinecraft().theWorld.isRemote)
+            return clientAmmoCount;
         int count = 0;
         for (int i = 0; i < ammoInventory.getSizeInventory(); i++) {
             ItemStack s = ammoInventory.getStackInSlot(i);
