@@ -1,120 +1,100 @@
 # Naval Armament MOD - TODO.md
 > タスク管理。実装フェーズのチェックリスト。
 
-最終更新: 2026-03-27
+最終更新: 2026-03-28
 
 ---
 
 ## 現在のフェーズ
-**Phase 1: 環境構築** ← 今ここ
+**バグ修正・仕上げフェーズ**（Phase 1〜9はほぼ完了）
 
 ---
 
-## Phase 1: 環境構築
+## 直近タスク
+
+### バグ修正
+- [x] ContainerNPE（C&D/OperatorConsole右クリッククラッシュ）修正
+- [x] デバッグログ削除（5か所）
+- [x] C&Dターゲットカウントが増え続けるデッドロック修正（replace-on-see + TTL）
+- [x] C&D GUIがCONTACTS:0になるバグ修正（CandDSyncPacket実装）
+- [x] EntityMob → IMob（エンダーマン検知漏れ修正）
+- [x] BFS内BlockNavalDummy追加（センサー→C&D経路修正）
+- [ ] CIC GUI残弾数リアルタイム更新の動作確認
+
+### テクスチャ
+- [ ] 未追加13個: shell_20mm, mk48, mk46, sub_ssm, shell_5inch_ap, essm, shell_5inch, sub_cruise, tomahawk, sm2, harpoon, shell_25mm, slbm
+
+### ドキュメント
+- [ ] TODO.md Phase 1〜9の全面更新（実装済みに[x]を付ける）
+- [ ] CONTEXT.md 実装済みファイル一覧の更新
+- [ ] en_US.langの整理（潜水艦VLS各種のlang未追加の可能性）
+
+---
+
+## Phase 1〜9（ほぼ完了）
+
+### Phase 1: 環境構築
 - [x] Java 8 (Temurin) インストール
 - [x] Forge 1.7.10 Src ダウンロード・展開
 - [x] Git インストール
 - [x] GitHubリポジトリ作成 (Sierra-117605/NavalArmamentMOD)
 - [x] git init / 初回commit / push
-- [ ] setupDecompWorkspace 完了
-- [ ] .\gradlew idea 実行
-- [ ] IntelliJ IDEA インストール・プロジェクトオープン
-- [ ] ExampleModを削除してNavalArmamentMod.java作成
-- [ ] .\gradlew runClient でMinecraft起動確認
-- [ ] MODリストに「Naval Armament MOD」表示確認
+- [x] setupDecompWorkspace 完了
+- [x] IntelliJ IDEA インストール・プロジェクトオープン
+- [x] .\gradlew runClient でMinecraft起動確認
 
----
+### Phase 2: 基底クラス＋レーダーブロック
+- [x] TENavalBase / BlockNavalBase
+- [x] ICableConnectable / IMultiBlockCore / INavalAmmo
+- [x] BlockSPY1Radar / TESPY1Radar
+- [x] BlockSPS67Radar / TEPS67Radar
+- [x] BlockSQS53Sonar / TESQS53Sonar
+- [x] BlockNavalDummy / TENavalDummy
+- [x] BlockNavalCable / TENavalCable
 
-## Phase 2: 基底クラス＋レーダーブロック
-- [ ] パッケージ構成作成 (com.navalarmament)
-- [ ] NavalArmamentMod.java (@Mod)
-- [ ] TENavalBase 実装
-- [ ] ICableConnectable インターフェース
-- [ ] BlockNavalBase 実装
-- [ ] BlockNavalRadar 基底クラス
-- [ ] TENavalRadar 基底クラス
-- [ ] BlockSPY1Radar (USN) 実装
-- [ ] TESPY1Radar 実装
-- [ ] TESRNavalRadar（回転アニメーション）
-- [ ] SPY-1のブループリント定義
-- [ ] MultiBlockHelper 実装
-- [ ] BlockNavalDummy 実装
-- [ ] runClientで設置・展開確認
+### Phase 3: ケーブル・処理ブロック
+- [x] TENavalSensor（BFS方式）
+- [x] TECandD（BFS→WCS送信、TTL管理、クライアント同期）
+- [x] TEWCS（ターゲット割り当て）
+- [x] TEADS / TEDataLink / TEAuxProcessor
+- [x] GuiCandD / ContainerCandD
+- [x] GuiHandler
 
----
+### Phase 4: 砲台
+- [x] TENavalWeapon（基底）
+- [x] BlockMk45Gun / TEMk45Gun
+- [x] BlockMk38Gun / TEMk38Gun
+- [x] ItemShell5Inch / ItemShell25mm / ItemShell20mm
+- [x] EntityShell
 
-## Phase 3: ケーブル・処理ブロック
-- [ ] BlockNavalCableImpl
-- [ ] TECable
-- [ ] CableNetwork（BFSグラフ管理）
-- [ ] TENavalProcessor 基底
-- [ ] TECandD 実装
-- [ ] TEWCS 実装
-- [ ] TEADS 実装
-- [ ] TEDataLink 実装
-- [ ] TEAuxProcessor (UYK-44) 実装
-- [ ] GuiCandDPanel
-- [ ] GuiRadarMonitor
+### Phase 5: VLS・CIWS・イルミネーター
+- [x] BlockMk41VLS / TEMk41VLS（8列GUI）
+- [x] BlockPhalanxCIWS / TEPhalanxCIWS
+- [x] BlockSPG62 / TESPG62
+- [x] ItemSM2 / ItemESSM
+- [x] EntityMissile
 
----
+### Phase 6: 可動ギミック
+- [x] BlockShutter / TEShutter
+- [x] BlockElevator / TEElevator
+- [x] BlockWeaponElevator / TEWeaponElevator
 
-## Phase 4: 砲台
-- [ ] TENavalWeapon 基底（旋回補間）
-- [ ] BlockMk45Gun / TEMk45Gun
-- [ ] BlockMk38Gun / TEMk38Gun
-- [ ] TESRNavalGun（砲塔/砲身分離描画）
-- [ ] ItemShell5Inch / ItemShell25mm
-- [ ] EntityShell（放物線軌道）
-- [ ] WeaponSystem.assignTargets()
+### Phase 7: 空母・MCHeli連携
+- [x] BlockCatapult / TECatapult
+- [x] BlockArrestingWire / TEArrestingWire
+- [x] BlockIFLOLS / TEIFLOLS
 
----
+### Phase 8: 対潜・潜水艦
+- [x] BlockSQS53Sonar / TESQS53Sonar
+- [x] BlockMk32Torpedo / TEMk32Torpedo
+- [x] EntityTorpedo
+- [x] ItemMk46Torpedo / ItemMk48Torpedo
 
-## Phase 5: VLS・CIWS・イルミネーター
-- [ ] BlockMk41VLS / TEMk41VLS
-- [ ] TESRNavalVLS（発射蓋開閉）
-- [ ] BlockPhalanxCIWS / TEPhalanxCIWS
-- [ ] TESRNavalCIWS（ガトリングスピン）
-- [ ] BlockSPG62 / TESPG62
-- [ ] ItemSM2 / ItemESSM
-- [ ] EntityMissile（3フェーズ誘導）
-- [ ] ChunkLoadManager（遠距離チャンクロード）
-
----
-
-## Phase 6: 可動ギミック
-- [ ] BlockShutter / TEShutter
-- [ ] TESRNavalShutter
-- [ ] BlockElevator / TEElevator
-- [ ] ElevatorManager
-- [ ] TEWeaponElevator
-- [ ] MCHeli連携（カタパルト・ワイヤー）
-
----
-
-## Phase 7: 空母・MCHeli連携
-- [ ] BlockCatapult / TECatapult
-- [ ] BlockArrestingWire / TEArrestingWire
-- [ ] BlockIFLOLS
-- [ ] McHeliCompat / McHeliEntityHelper
-
----
-
-## Phase 8: 対潜・潜水艦
-- [ ] BlockSQS53Sonar / TESQS53Sonar
-- [ ] BlockMk32Torpedo / TEMk32Torpedo
-- [ ] EntityTorpedo（水中ホーミング）
-- [ ] ItemMk46Torpedo / ItemMk48Torpedo
-- [ ] アスロック実装
-
----
-
-## Phase 9: 船体・CICブロック
-- [ ] BlockHullPanel各種
-- [ ] BlockHullStructure各種
-- [ ] BlockSubmarineEquip各種
-- [ ] BlockLargeDisplay / TELargeDisplay
-- [ ] BlockOperatorConsole
-- [ ] CIC内装飾りブロック各種
+### Phase 9: 船体・CICブロック
+- [x] BlockHullPanel / BlockHullStructure / BlockSubmarineEquip
+- [x] BlockLargeDisplay / TELargeDisplay
+- [x] BlockOperatorConsole / TEOperatorConsole
+- [x] GuiOperatorConsole / ContainerOperatorConsole
 
 ---
 

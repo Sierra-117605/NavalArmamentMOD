@@ -6,9 +6,9 @@
 ---
 
 ## 今どこにいるか
-フェーズ: Phase 7完了、GUI修正中
-現在の作業: 武装GUI（ContainerWeapon/GuiWeapon）修正・VLSレイアウト対応
-次のステップ: GUI修正をコミット → C&D GUIの実装
+フェーズ: Phase 7〜9完了、バグ修正フェーズ
+現在の作業: C&D GUIのCONTACTS:0バグ修正完了（CandDSyncPacket実装、IMob修正、BFS修正）
+次のステップ: .\gradlew runClient で動作確認 → テクスチャ13個の追加
 
 ---
 
